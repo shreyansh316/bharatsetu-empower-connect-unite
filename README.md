@@ -1,73 +1,131 @@
-# Welcome to your Lovable project
+# 🇮🇳 BharatSetu (भारतसेतु) - Phase: Anti-Gravity
 
-## Project info
+**BharatSetu** is a next-generation, hyper-modern digital state ecosystem designed for the future of Indian civic tech (2028 Blueprint). **Phase: Anti-Gravity** represents a complete architectural and UI/UX overhaul of the platform, stripping away flat, rigid components in favor of a spatial, weightless, and highly engineered aesthetic.
 
-**URL**: https://lovable.dev/projects/43653c53-298f-4753-9c87-b7420859181e
+This repository contains the front-end architecture for the new OLED Cosmic Canvas login and dashboard experience, engineered for zero-latency, high-fidelity rendering, and extreme accessibility.
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## ✨ Key Features & Aesthetic (The Anti-Gravity Philosophy)
 
-**Use Lovable**
+* **OLED Cosmic Canvas:** Pure `#000000` backgrounds combined with shifting aurora mesh gradients and an SVG grain texture for a tactile, premium feel.
+* **Spatial Glassmorphism:** Core terminals and bento-box modules utilize heavy `backdrop-filter: blur(32px)` with dynamic ambient lighting that reacts to cursor coordinates.
+* **Fluid macOS-Style Dock:** A floating, physics-driven bottom navigation dock featuring 3D icons, bounce-up magnification, and frosted glass tooltips.
+* **Ambient Orb Physics:** Grape, Cyan, and Pink ambient light orbs that drift lazily in the background and magnetically pull toward user interaction points.
+* **Engineered Typography:** Utilizing **Space Grotesk** for primary cinematic headers (rendered at massive 7rem scales) and **JetBrains Mono** for all input fields, stats, and security data.
+* **Hyper-Microinteractions:** Liquid CSS transitions, magnetic button pulls, OTP haptic visual feedback, and ⌘K (Cmd+K) global command palettes.
+* **Zero-Latency Edge Architecture:** Built for the future with WebAssembly acceleration, strict code-splitting, and parallel CPU web worker threading.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/43653c53-298f-4753-9c87-b7420859181e) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🛠 Tech Stack
 
-**Use your preferred IDE**
+**Core Frameworks & Libraries:**
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+* **Framework:** [Next.js 14](https://nextjs.org/) (App Router, React Server Components)
+* **Styling:** [Tailwind CSS](https://tailwindcss.com/) (Extended with custom safe-area variables and fluid typography plugins)
+* **Physics & Animation:** [Framer Motion](https://www.framer.com/motion/) (For liquid spring transitions and layout shifts)
+* **3D / Spatial Rendering:** [Three.js](https://threejs.org/) & React Three Fiber (For ambient orbs and dynamic background canvas)
+* **Typography:** Space Grotesk & JetBrains Mono (Variable Web Fonts)
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+**Security & Auth (Mocked):**
 
-Follow these steps:
+* **Authentication:** OTP / DigiLocker OAuth integration flows
+* **State Management:** Zustand (for lightweight, fluid state transitions)
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+---
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## 🚀 Getting Started
 
-# Step 3: Install the necessary dependencies.
-npm i
+### Prerequisites
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+Ensure you have the following installed:
+
+* Node.js (v18.0.0 or higher)
+* npm, yarn, or pnpm
+
+### Installation
+
+1. **Clone the repository:**
+```bash
+git clone https://github.com/your-username/bharatsetu-antigravity.git
+cd bharatsetu-antigravity
+
 ```
 
-**Edit a file directly in GitHub**
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+2. **Install dependencies:**
+```bash
+npm install
+# or
+yarn install
 
-**Use GitHub Codespaces**
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
 
-## What technologies are used for this project?
+3. **Set up environment variables:**
+Create a `.env.local` file in the root directory and add any necessary API keys (e.g., mock auth endpoints).
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:3000/api
 
-This project is built with:
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
 
-## How can I deploy this project?
+4. **Run the development server:**
+```bash
+npm run dev
+# or
+yarn dev
 
-Simply open [Lovable](https://lovable.dev/projects/43653c53-298f-4753-9c87-b7420859181e) and click on Share -> Publish.
+```
 
-## Can I connect a custom domain to my Lovable project?
 
-Yes, you can!
+5. **Experience the UI:**
+Open [http://localhost:3000](https://www.google.com/search?q=http://localhost:3000) with your browser to view the Anti-Gravity login portal.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+---
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## 📂 Project Structure
+
+```text
+bharatsetu-antigravity/
+├── public/                 # Static assets (SVG noise textures, localized icons)
+├── src/
+│   ├── app/                # Next.js App Router (Pages & Layouts)
+│   │   ├── (auth)/         # Anti-Gravity Login & DigiLocker routes
+│   │   ├── dashboard/      # The 13 Civic Modules (Bento-box layout)
+│   │   └── globals.css     # Core Tailwind & custom OLED variables
+│   ├── components/         # Reusable UI architecture
+│   │   ├── canvas/         # Three.js ambient orbs and mesh gradients
+│   │   ├── dock/           # macOS-style floating bottom dock
+│   │   ├── glass/          # Reusable frosted glass cards & panels
+│   │   └── typography/     # Fluid text components (JetBrains/Space Grotesk)
+│   ├── hooks/              # Custom React hooks (useMousePosition, usePhysics)
+│   └── lib/                # Utility functions, constants, and animation variants
+├── tailwind.config.ts      # Custom theme, spacing, and plugin configurations
+└── README.md
+
+```
+
+---
+
+## 🛡 Performance & Accessibility Targets
+
+This project is strictly audited to meet 2028 deployment standards:
+
+* **Lighthouse Score Target:** 95+ (Performance, Accessibility, Best Practices, SEO)
+* **Contrast Ratios:** Minimum WCAG 2.1 AA compliance across all frosted glass states against OLED backgrounds.
+* **Keyboard Navigation:** Full support for `Tab` indexing, explicit `focus-visible` ring designs, and screen-reader ARIA landmarks.
+* **FPS Target:** Locked 60fps animations via CSS hardware acceleration (`transform: translate3d`) and WebGL offloading.
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions to elevate the BharatSetu ecosystem. If you have ideas for new micro-interactions, accessibility improvements, or module integrations:
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
