@@ -18,6 +18,17 @@ import ModuleLauncher from "./pages/ModuleLauncher";
 import PathShaalaPlus from "./pages/PathShaalaPlus";
 import KrishiBandhu from "./pages/KrishiBandhu";
 import AbleAccessMap from "./pages/AbleAccessMap";
+import NariShakti from "./pages/NariShakti";
+import ResQNet from "./pages/ResQNet";
+import FinJan from "./pages/FinJan";
+import UdyamSetu from "./pages/UdyamSetu";
+import DivyangSahayak from "./pages/DivyangSahayak";
+import ShramikKalyan from "./pages/ShramikKalyan";
+import VidyaSetu from "./pages/VidyaSetu";
+import NyayaMitra from "./pages/NyayaMitra";
+import ArogyaDoot from "./pages/ArogyaDoot";
+import UrjaVikas from "./pages/UrjaVikas";
+import Pariwahan from "./pages/Pariwahan";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,6 +53,17 @@ const App = () => (
             <Route path="/pathshaala-plus" element={<PathShaalaPlus />} />
             <Route path="/krishi-bandhu" element={<KrishiBandhu />} />
             <Route path="/able-access-map" element={<AbleAccessMap />} />
+            <Route path="/nari-shakti" element={<NariShakti />} />
+            <Route path="/resq-net" element={<ResQNet />} />
+            <Route path="/fin-jan" element={<FinJan />} />
+            <Route path="/udyam-setu" element={<UdyamSetu />} />
+            <Route path="/divyang-sahayak" element={<DivyangSahayak />} />
+            <Route path="/shramik-kalyan" element={<ShramikKalyan />} />
+            <Route path="/vidya-setu" element={<VidyaSetu />} />
+            <Route path="/nyaya-mitra" element={<NyayaMitra />} />
+            <Route path="/arogya-doot" element={<ArogyaDoot />} />
+            <Route path="/urja-vikas" element={<UrjaVikas />} />
+            <Route path="/pariwahan" element={<Pariwahan />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
