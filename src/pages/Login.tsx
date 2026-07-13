@@ -1,22 +1,10 @@
-
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Phone, 
-  Mail, 
-  Shield, 
-  Chrome,
-  ArrowLeft,
-  CheckCircle,
-  Bot,
-  Lock,
-  Eye,
-  AlertTriangle,
-  User
+import {
+  Phone, Mail, Shield, Chrome, ArrowRight, ArrowLeft,
+  Bot, Lock, Eye, Sparkles, Search, CheckCircle,
+  AlertTriangle, Fingerprint
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -25,45 +13,82 @@ import EmailPasswordLogin from '@/components/auth/EmailPasswordLogin';
 import DigiLockerLogin from '@/components/auth/DigiLockerLogin';
 import GoogleLogin from '@/components/auth/GoogleLogin';
 import HumanVerification from '@/components/auth/HumanVerification';
-import AIContextualHelp from '@/components/AIContextualHelp';
-import AIChat from '@/components/AIChat';
-import UserDashboard from '@/components/UserDashboard';
-import { useAdvancedAI } from '@/hooks/useAdvancedAI';
+
+const TAB_CONFIG = [
+  { id: 'phone', label: 'Phone', icon: Phone, tint: '#22d3ee' },
+  { id: 'email', label: 'Email', icon: Mail, tint: '#a78bfa' },
+  { id: 'digilocker', label: 'DigiLocker', icon: Shield, tint: '#fb923c' },
+  { id: 'google', label: 'Google', icon: Chrome, tint: '#f472b6' },
+];
+
+const SECURITY_STATS = [
+  { label: 'Encryption', value: 'AES-256', icon: Lock },
+  { label: 'Uptime', value: '99.99%', icon: Eye },
+  { label: 'AI Shield', value: 'Active', icon: Bot },
+  { label: 'MFA', value: 'Enabled', icon: Fingerprint },
+];
 
 const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const cardRef = useRef<HTMLDivElement>(null);
+
   const [activeTab, setActiveTab] = useState('phone');
   const [showHumanVerification, setShowHumanVerification] = useState(false);
   const [verificationLevel, setVerificationLevel] = useState<'basic' | 'advanced' | 'biometric'>('basic');
   const [isVerified, setIsVerified] = useState(false);
   const [loginAttempts, setLoginAttempts] = useState(0);
-  const [showAIHelp, setShowAIHelp] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [showUserDashboard, setShowUserDashboard] = useState(false);
-  const { activateAI, isAIActive } = useAdvancedAI();
+  const [loaded, setLoaded] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  React.useEffect(() => {
-    activateAI('login');
-  }, [activateAI]);
+  useEffect(() => {
+    const timer = setTimeout(() => setLoaded(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Keyboard shortcut
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        navigate('/modules');
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [navigate]);
+
+  // 3D tilt
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = ((y - centerY) / centerY) * -4;
+    const rotateY = ((x - centerX) / centerX) * 4;
+    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    card.style.setProperty('--mouse-x', `${(x / rect.width) * 100}%`);
+    card.style.setProperty('--mouse-y', `${(y / rect.height) * 100}%`);
+  }, []);
+
+  const handleMouseLeave = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    e.currentTarget.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+  }, []);
 
   const handleSuccessfulLogin = () => {
-    setIsLoggedIn(true);
+    setIsLoggingIn(true);
     toast({
       title: "Login Successful",
-      description: "Welcome back! You are now logged in to BharatSetu",
+      description: "Welcome back! Routing to your dashboard...",
     });
-    
-    // Navigate to account page after successful login
-    setTimeout(() => {
-      navigate('/account');
-    }, 1500);
+    setTimeout(() => navigate('/account'), 1500);
   };
 
   const handleLoginAttempt = () => {
     const newAttempts = loginAttempts + 1;
     setLoginAttempts(newAttempts);
-
     if (newAttempts >= 3) {
       setVerificationLevel('advanced');
       setShowHumanVerification(true);
@@ -71,7 +96,6 @@ const Login = () => {
       setVerificationLevel('basic');
       setShowHumanVerification(true);
     } else {
-      // Simulate successful login for demo
       handleSuccessfulLogin();
     }
   };
@@ -79,250 +103,234 @@ const Login = () => {
   const handleVerificationComplete = (verified: boolean) => {
     setIsVerified(verified);
     setShowHumanVerification(false);
-    if (verified) {
-      handleSuccessfulLogin();
-      console.log('Human verification completed successfully');
-    }
+    if (verified) handleSuccessfulLogin();
   };
 
-  const securityFeatures = [
-    { icon: Shield, label: 'End-to-end Encryption', description: 'Your data is protected with military-grade encryption' },
-    { icon: Eye, label: 'Privacy First', description: 'We never store or share your personal information' },
-    { icon: Bot, label: 'AI Fraud Detection', description: 'Advanced AI monitors for suspicious login activities' },
-    { icon: Lock, label: 'Multi-factor Authentication', description: 'Multiple layers of security verification' }
-  ];
+  const currentTint = TAB_CONFIG.find(t => t.id === activeTab)?.tint || '#22d3ee';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-green-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-6xl">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <Button
-              variant="ghost"
-              onClick={() => navigate('/')}
-              className="absolute top-4 left-4 md:top-8 md:left-8"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
-            
-            {/* User Profile Button (shown when logged in) */}
-            {isLoggedIn && (
-              <Button
-                variant="outline"
-                onClick={() => setShowUserDashboard(true)}
-                className="absolute top-4 right-4 md:top-8 md:right-8 bg-gradient-to-r from-blue-500 to-purple-600 text-white border-0 hover:from-blue-600 hover:to-purple-700"
-              >
-                <User className="w-4 h-4 mr-2" />
-                My Dashboard
-              </Button>
-            )}
-          </div>
-          
-          <div className="flex items-center justify-center space-x-3 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-r from-orange-500 via-white to-green-500 rounded-full flex items-center justify-center border-2 border-gray-300">
-              <span className="text-blue-600 font-bold text-xl">भ</span>
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">BharatSetu</h1>
-              <p className="text-sm text-gray-600">Advanced Secure Login Portal</p>
-            </div>
-          </div>
-          
-          <div className="flex items-center justify-center space-x-4 mb-4">
-            <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-              <Bot className="w-3 h-3 mr-1" />
-              AI-Enhanced Security
-            </Badge>
-            <Badge variant="secondary" className="bg-green-100 text-green-800">
-              <Shield className="w-3 h-3 mr-1" />
-              Government Verified
-            </Badge>
-            {isVerified && (
-              <Badge variant="secondary" className="bg-purple-100 text-purple-800">
-                <CheckCircle className="w-3 h-3 mr-1" />
-                Human Verified
-              </Badge>
-            )}
-          </div>
+    <div className="min-h-screen aurora-bg aurora-animated noise-overlay relative overflow-hidden flex items-center justify-center">
+      {/* ── Ambient Orbs ── */}
+      <div className="orb w-[500px] h-[500px] -top-32 -left-20" style={{ background: '#6C22A6', filter: 'blur(120px)', opacity: 0.35 }} />
+      <div className="orb w-[400px] h-[400px] bottom-0 -right-16" style={{ background: '#00E5FF', filter: 'blur(100px)', opacity: 0.3, animationDelay: '8s' }} />
+      {/* Backlight orb behind card */}
+      <div
+        className="orb w-[350px] h-[350px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+        style={{ background: currentTint, filter: 'blur(140px)', opacity: 0.15, transition: 'background 0.8s ease' }}
+      />
 
-          <Button
-            variant="outline"
-            onClick={() => setShowAIHelp(true)}
-            className="mb-4"
-          >
-            <Bot className="w-4 h-4 mr-2" />
-            Need Help? Ask AI Assistant
-          </Button>
+      {/* ── Massive Background Watermark ── */}
+      <div
+        className="fixed inset-0 flex items-center justify-center pointer-events-none select-none z-0"
+        style={{ overflow: 'hidden' }}
+      >
+        <span
+          className="text-gradient-hero"
+          style={{
+            fontSize: 'clamp(6rem, 20vw, 14rem)',
+            fontWeight: 100,
+            opacity: 0.04,
+            letterSpacing: '0.05em',
+            mixBlendMode: 'overlay' as any,
+          }}
+        >
+          BharatSetu
+        </span>
+      </div>
+
+      {/* ── Floating Navigation Island ── */}
+      <nav className={`nav-island flex items-center gap-4 transition-all duration-700 ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
+        <button onClick={() => navigate('/')} className="text-white/50 hover:text-white/90 transition-colors flex items-center gap-1.5 text-xs">
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">Home</span>
+        </button>
+        <div className="h-5 w-px bg-white/10" />
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 to-cyan-400 flex items-center justify-center">
+            <Sparkles className="w-3.5 h-3.5 text-white" />
+          </div>
+          <span className="font-semibold text-white/90 text-sm tracking-wide">Login</span>
+        </div>
+        <div className="h-5 w-px bg-white/10" />
+        <button className="text-white/30 hover:text-white/60 transition-colors flex items-center gap-1.5 text-xs">
+          <Search className="w-3 h-3" />
+          <kbd className="hidden md:inline text-[10px] bg-white/10 px-1.5 py-0.5 rounded font-mono-stat glow-badge" style={{ boxShadow: '0 0 8px rgba(139,92,246,0.3)' }}>⌘K</kbd>
+        </button>
+        <div className="h-5 w-px bg-white/10 hidden sm:block" />
+        <Badge className="glow-badge bg-white/5 border border-white/10 text-green-300 text-[10px] px-2 py-0.5 rounded-full hidden sm:flex">
+          <Shield className="w-2.5 h-2.5 mr-1" /> Gov Verified
+        </Badge>
+      </nav>
+
+      {/* ── Main Content ── */}
+      <div className="relative z-10 w-full max-w-[440px] px-4 flex flex-col items-center">
+
+        {/* ── Floating Security Stat Bubbles ── */}
+        <div className={`absolute -top-4 -left-20 hidden lg:block transition-all duration-1000 delay-700 ${loaded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'}`}>
+          {SECURITY_STATS.slice(0, 2).map((stat, i) => (
+            <div key={i} className="glass rounded-2xl px-4 py-3 mb-3 flex items-center gap-3 hover-lift" style={{ animationDelay: `${i * 200}ms` }}>
+              <stat.icon className="w-4 h-4 text-white/40" />
+              <div>
+                <div className="font-mono-stat text-xs text-white/70 font-medium">{stat.value}</div>
+                <div className="text-[10px] text-white/30 tracking-wider uppercase">{stat.label}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className={`absolute -top-4 -right-20 hidden lg:block transition-all duration-1000 delay-900 ${loaded ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'}`}>
+          {SECURITY_STATS.slice(2).map((stat, i) => (
+            <div key={i} className="glass rounded-2xl px-4 py-3 mb-3 flex items-center gap-3 hover-lift" style={{ animationDelay: `${(i + 2) * 200}ms` }}>
+              <stat.icon className="w-4 h-4 text-white/40" />
+              <div>
+                <div className="font-mono-stat text-xs text-white/70 font-medium">{stat.value}</div>
+                <div className="text-[10px] text-white/30 tracking-wider uppercase">{stat.label}</div>
+              </div>
+            </div>
+          ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Security Features */}
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Advanced Security Features</h2>
-            {securityFeatures.map((feature, index) => (
-              <Card key={index} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-4">
-                  <div className="flex items-start space-x-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                      <feature.icon className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-900">{feature.label}</h3>
-                      <p className="text-sm text-gray-600">{feature.description}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+        {/* ── Glass Login Terminal ── */}
+        <div
+          ref={cardRef}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+          className={`
+            w-full glass-strong spotlight-border rounded-3xl overflow-hidden
+            tilt-card transition-all duration-1000
+            ${loaded ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-12 scale-95'}
+            ${isLoggingIn ? 'scale-105 opacity-0' : ''}
+          `}
+          style={{
+            boxShadow: `0 24px 80px rgba(0,0,0,0.5), 0 0 60px ${currentTint}10`,
+            transition: 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.6s ease, opacity 0.8s ease, scale 0.8s ease',
+          }}
+        >
+          {/* Specular top highlight */}
+          <div className="h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+
+          <div className="p-8 sm:p-10">
+            {/* Header */}
+            <div className="text-center mb-8">
+              <h2
+                className="text-white/90 font-semibold mb-1"
+                style={{ fontSize: 'clamp(1.25rem, 3vw, 1.5rem)' }}
+              >
+                Welcome Back
+              </h2>
+              <p className="text-white/30 text-xs tracking-[0.2em] uppercase">
+                Advanced Secure Login Portal
+              </p>
+            </div>
+
+            {/* ── Segmented Control Pill ── */}
+            <div className="glass rounded-2xl p-1 flex mb-8 relative">
+              {/* Sliding active pill */}
+              <div
+                className="absolute top-1 bottom-1 rounded-xl transition-all duration-300"
+                style={{
+                  width: `${100 / TAB_CONFIG.length}%`,
+                  left: `${TAB_CONFIG.findIndex(t => t.id === activeTab) * (100 / TAB_CONFIG.length)}%`,
+                  background: `${currentTint}20`,
+                  boxShadow: `0 0 20px ${currentTint}15`,
+                }}
+              />
+              {TAB_CONFIG.map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex-1 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-1.5 relative z-10 transition-colors duration-300 ${
+                    activeTab === tab.id ? 'text-white' : 'text-white/30 hover:text-white/60'
+                  }`}
+                >
+                  <tab.icon className="w-3 h-3" />
+                  <span className="hidden sm:inline">{tab.label}</span>
+                </button>
+              ))}
+            </div>
 
             {/* Login Attempts Warning */}
-            {loginAttempts > 0 && (
-              <Card className="border-orange-200 bg-orange-50">
-                <CardContent className="p-4">
-                  <div className="flex items-center space-x-2">
-                    <AlertTriangle className="w-5 h-5 text-orange-500" />
-                    <div>
-                      <h3 className="font-semibold text-orange-800">Security Notice</h3>
-                      <p className="text-sm text-orange-600">
-                        {loginAttempts} login attempt(s) detected. 
-                        {loginAttempts >= 2 && ' Human verification required.'}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+            {loginAttempts > 0 && !showHumanVerification && (
+              <div className="mb-6 glass rounded-xl p-3 flex items-center gap-3 border border-amber-500/20">
+                <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                <p className="text-xs text-amber-200/80">
+                  {loginAttempts} attempt(s) detected.{loginAttempts >= 2 && ' Human verification required.'}
+                </p>
+              </div>
             )}
-          </div>
 
-          {/* Login Forms */}
-          <div className="lg:col-span-2">
+            {/* ── Form Content ── */}
             {showHumanVerification ? (
               <HumanVerification
                 onVerificationComplete={handleVerificationComplete}
                 verificationLevel={verificationLevel}
               />
             ) : (
-              <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-md">
-                <CardHeader className="text-center pb-2">
-                  <CardTitle className="text-xl text-gray-800">Welcome Back</CardTitle>
-                  <p className="text-gray-600">Choose your preferred login method</p>
-                </CardHeader>
-                <CardContent>
-                  <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <TabsList className="grid w-full grid-cols-4 mb-6">
-                      <TabsTrigger value="phone" className="text-xs">
-                        <Phone className="w-4 h-4 mb-1" />
-                        Phone
-                      </TabsTrigger>
-                      <TabsTrigger value="email" className="text-xs">
-                        <Mail className="w-4 h-4 mb-1" />
-                        Email
-                      </TabsTrigger>
-                      <TabsTrigger value="digilocker" className="text-xs">
-                        <Shield className="w-4 h-4 mb-1" />
-                        DigiLocker
-                      </TabsTrigger>
-                      <TabsTrigger value="google" className="text-xs">
-                        <Chrome className="w-4 h-4 mb-1" />
-                        Google
-                      </TabsTrigger>
-                    </TabsList>
-
-                    <TabsContent value="phone">
-                      <PhoneOTPLogin />
-                      <Button 
-                        onClick={handleLoginAttempt}
-                        className="w-full mt-4 bg-gradient-to-r from-blue-500 to-purple-600"
-                      >
-                        Login with Phone
-                      </Button>
-                    </TabsContent>
-
-                    <TabsContent value="email">
-                      <EmailPasswordLogin />
-                      <Button 
-                        onClick={handleLoginAttempt}
-                        className="w-full mt-4 bg-gradient-to-r from-green-500 to-blue-600"
-                      >
-                        Login with Email
-                      </Button>
-                    </TabsContent>
-
-                    <TabsContent value="digilocker">
-                      <DigiLockerLogin />
-                      <Button 
-                        onClick={handleLoginAttempt}
-                        className="w-full mt-4 bg-gradient-to-r from-orange-500 to-red-600"
-                      >
-                        Login with DigiLocker
-                      </Button>
-                    </TabsContent>
-
-                    <TabsContent value="google">
-                      <GoogleLogin />
-                      <Button 
-                        onClick={handleLoginAttempt}
-                        className="w-full mt-4 bg-gradient-to-r from-red-500 to-pink-600"
-                      >
-                        Login with Google
-                      </Button>
-                    </TabsContent>
-                  </Tabs>
-
-                  <Separator className="my-6" />
-                  
-                  <div className="text-center">
-                    <p className="text-sm text-gray-600 mb-4">
-                      Don't have an account?{' '}
-                      <Button 
-                        variant="link" 
-                        className="p-0 h-auto text-blue-600"
-                        onClick={() => navigate('/register')}
-                      >
-                        Register Now
-                      </Button>
-                    </p>
-                    
-                    <div className="flex items-center justify-center space-x-2 text-xs text-gray-500">
-                      <CheckCircle className="w-3 h-3 text-green-500" />
-                      <span>Secured by Government of India</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <div>
+                {/* Auth form components — already styled by their own files */}
+                <div className="space-y-4 [&_input]:bg-white/[0.04] [&_input]:border-white/10 [&_input]:text-white [&_input]:placeholder:text-white/20 [&_input]:rounded-xl [&_input]:font-mono-stat [&_label]:text-white/50 [&_label]:text-xs [&_label]:tracking-wider [&_label]:uppercase focus-within:[&_input]:border-cyan-400/50 focus-within:[&_input]:bg-white/[0.08] [&_input]:transition-all [&_input]:duration-300">
+                  {activeTab === 'phone' && <PhoneOTPLogin />}
+                  {activeTab === 'email' && <EmailPasswordLogin />}
+                  {activeTab === 'digilocker' && <DigiLockerLogin />}
+                  {activeTab === 'google' && <GoogleLogin />}
+                </div>
+              </div>
             )}
           </div>
+
+          {/* Bottom specular */}
+          <div className="h-px w-full bg-gradient-to-r from-transparent via-white/5 to-transparent" />
         </div>
 
-        {/* Footer */}
-        <div className="text-center mt-8 space-y-2">
-          <div className="flex justify-center space-x-6 text-xs text-gray-500">
-            <span>🔒 End-to-end Encrypted</span>
-            <span>🤖 AI-Powered Security</span>
-            <span>🛡️ Multi-factor Authentication</span>
-            <span>🇮🇳 Government Verified</span>
-          </div>
-          <p className="text-xs text-gray-500">
-            Protected by advanced encryption • Privacy Policy • Terms of Service
+        {/* ── Register link (outside card) ── */}
+        <div className={`mt-6 text-center transition-all duration-700 delay-500 ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+          <p className="text-white/25 text-xs">
+            Don't have an account?{' '}
+            <button
+              onClick={() => navigate('/register')}
+              className="text-white/60 hover:text-white transition-colors font-medium"
+            >
+              Register Now
+            </button>
           </p>
         </div>
+
+        {/* ── Verified badge ── */}
+        {isVerified && (
+          <div className="mt-4">
+            <Badge className="glass rounded-full text-green-300 text-[10px] px-3 py-1 border border-green-500/20">
+              <CheckCircle className="w-3 h-3 mr-1.5" /> Human Verified
+            </Badge>
+          </div>
+        )}
       </div>
 
-      {/* AI Components */}
-      <AIContextualHelp 
-        currentPage="login"
-        isVisible={showAIHelp}
-        onClose={() => setShowAIHelp(false)}
-      />
-      <AIChat />
-      
-      {/* User Dashboard */}
-      <UserDashboard
-        isVisible={showUserDashboard}
-        onClose={() => setShowUserDashboard(false)}
-      />
+      {/* ── Floating Bottom Dock ── */}
+      <div className={`bottom-dock transition-all duration-700 delay-1000 ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+        <button onClick={() => navigate('/')} className="dock-item" title="Home">
+          <Sparkles className="w-4 h-4" />
+        </button>
+        <div className="w-px h-5 bg-white/10 mx-1" />
+        <button onClick={() => navigate('/modules')} className="dock-item" title="Modules">
+          <Search className="w-4 h-4" />
+        </button>
+        <button className="dock-item" title="Encryption">
+          <Lock className="w-4 h-4" />
+        </button>
+        <button className="dock-item" title="Privacy">
+          <Eye className="w-4 h-4" />
+        </button>
+        <button className="dock-item" title="AI Shield">
+          <Bot className="w-4 h-4" />
+        </button>
+        <button className="dock-item" title="Biometrics">
+          <Fingerprint className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* ── Vignette ── */}
+      <div className="fixed inset-0 pointer-events-none z-[1]" style={{
+        background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.6) 100%)',
+      }} />
     </div>
   );
 };

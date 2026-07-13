@@ -1,46 +1,39 @@
-import { startRegistration, startAuthentication } from '@simplewebauthn/browser';
-
 /**
- * WebAuthn utilities for biometric authentication.
- * Relies on a backend to generate options and verify responses.
+ * Phase 8: Secure Document Vault (WebAuthn)
+ * 
+ * Implement biometric authentication (WebAuthn/FaceID/TouchID) 
+ * as a primary gatekeeper to access the Document Vault.
  */
 
-// Example: Register a new biometric credential
-export const registerBiometric = async (fetchOptionsFromServer: () => Promise<any>, sendResponseToServer: (response: any) => Promise<boolean>) => {
-  try {
-    // 1. Get registration options from your backend
-    const options = await fetchOptionsFromServer();
-    
-    // 2. Start WebAuthn registration (prompts user for fingerprint/FaceID)
-    const attResp = await startRegistration(options);
-    
-    // 3. Send the response back to your backend for verification
-    const success = await sendResponseToServer(attResp);
-    return success;
-  } catch (error: any) {
-    if (error.name === 'InvalidStateError') {
-      console.warn('Authenticator was probably already registered by user');
-    } else {
-      console.error('WebAuthn Registration Error:', error);
-    }
+export const requestBiometricAuth = async (): Promise<boolean> => {
+  // Check if WebAuthn is supported
+  if (!window.PublicKeyCredential) {
+    console.warn('WebAuthn not supported by this browser.');
+    // Fallback to password or PIN in a real app
     return false;
   }
-};
 
-// Example: Authenticate using an existing credential
-export const authenticateBiometric = async (fetchOptionsFromServer: () => Promise<any>, sendResponseToServer: (response: any) => Promise<boolean>) => {
   try {
-    // 1. Get authentication options from your backend
-    const options = await fetchOptionsFromServer();
-    
-    // 2. Start WebAuthn authentication (prompts user for fingerprint/FaceID)
-    const asseResp = await startAuthentication(options);
-    
-    // 3. Send the response back to your backend for verification
-    const success = await sendResponseToServer(asseResp);
-    return success;
+    // Generate a random challenge (in production, this comes from the server)
+    const challenge = new Uint8Array(32);
+    window.crypto.getRandomValues(challenge);
+
+    // Prompt user for local biometric authentication (TouchID, FaceID, Windows Hello)
+    const credential = await navigator.credentials.get({
+      publicKey: {
+        challenge,
+        rpId: window.location.hostname,
+        userVerification: 'required', // Strictly require biometric or PIN
+      }
+    });
+
+    if (credential) {
+      console.log('Biometric authentication successful!');
+      return true;
+    }
+    return false;
   } catch (error) {
-    console.error('WebAuthn Authentication Error:', error);
+    console.error('Biometric auth failed or was cancelled:', error);
     return false;
   }
 };

@@ -1,246 +1,291 @@
-import React, { useState, useRef, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
-  Heart, Scale, Briefcase, AlertCircle, ArrowLeft, ArrowRight,
-  Bot, Sparkles, Star, Users, MapPin, Phone, Calendar,
-  FileText, Activity, TrendingUp, Shield, Zap,
-  BookOpen, PlusCircle, Sun, Navigation, Search
-} from 'lucide-react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Search, Command, Activity, Zap, Shield, Users, Leaf, GraduationCap, Building2, ChevronRight } from 'lucide-react';
+import Header from '../components/Header';
 import { useNavigate } from 'react-router-dom';
+import { Category, CATEGORIES, SCHEMES_DB } from '../data/mockSchemes';
 
-const ModuleLauncher = () => {
+// Category Icon Mapping
+const CategoryIcon = ({ category, className }: { category: Category; className?: string }) => {
+  switch (category) {
+    case 'Yuva': return <Zap className={className} />;
+    case 'Nari Shakti': return <Shield className={className} />;
+    case 'Krishi & Rural': return <Leaf className={className} />;
+    case 'Swasthya': return <Activity className={className} />;
+    case 'Arthik & MSME': return <Users className={className} />;
+    case 'Infrastructure': return <Building2 className={className} />;
+    case 'Education': return <GraduationCap className={className} />;
+    default: return <Activity className={className} />;
+  }
+};
+
+// Category Ribbon Color Mapping
+const getCategoryRibbonColor = (category: Category) => {
+  switch (category) {
+    case 'Yuva': return 'bg-yellow-500';
+    case 'Nari Shakti': return 'bg-pink-600';
+    case 'Krishi & Rural': return 'bg-emerald-600';
+    case 'Swasthya': return 'bg-blue-500';
+    case 'Arthik & MSME': return 'bg-orange-500';
+    case 'Infrastructure': return 'bg-slate-700';
+    case 'Education': return 'bg-indigo-600';
+    default: return 'bg-blue-600';
+  }
+};
+
+// Framer Motion Variants for Staggered List
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05, // Rapid cascading sequence
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 15 },
+  show: { 
+    opacity: 1, 
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 24,
+    }
+  },
+  exit: { 
+    opacity: 0, 
+    scale: 0.95,
+    transition: { duration: 0.15 } 
+  }
+};
+
+export const ModuleLauncher: React.FC = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState<Category>('All');
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
-  const modules = [
-    {
-      id: 'swasthya', title: 'SwasthyaMitra', subtitle: 'AI Health Assistant',
-      icon: Heart, color: '#f472b6', route: '/swasthya-mitra',
-      stat: '2.5M+', statLabel: 'Users'
-    },
-    {
-      id: 'kanoon', title: 'KanoonSathi', subtitle: 'Legal Aid Platform',
-      icon: Scale, color: '#818cf8', route: '/kanoon-sathi',
-      stat: '1.2K+', statLabel: 'Cases'
-    },
-    {
-      id: 'yuva', title: 'YuvaRojgar', subtitle: 'Career Empowerment',
-      icon: Briefcase, color: '#34d399', route: '/yuva-rojgar',
-      stat: '50K+', statLabel: 'Jobs'
-    },
-    {
-      id: 'samasya', title: 'SamasyaReport', subtitle: 'Civic Issue Reporter',
-      icon: AlertCircle, color: '#fb923c', route: '/samasya-report',
-      stat: '75K+', statLabel: 'Reports'
-    },
-    {
-      id: 'narishakti', title: 'NariShakti', subtitle: 'Women\'s Safety',
-      icon: Shield, color: '#f9a8d4', route: '/nari-shakti',
-      stat: '100K+', statLabel: 'Protected'
-    },
-    {
-      id: 'resqnet', title: 'ResQNet', subtitle: 'Disaster Mesh Network',
-      icon: Zap, color: '#fb923c', route: '/resq-net',
-      stat: '500+', statLabel: 'Nodes'
-    },
-    {
-      id: 'finjan', title: 'FinJan', subtitle: 'Financial Literacy',
-      icon: TrendingUp, color: '#4ade80', route: '/fin-jan',
-      stat: '₹10Cr+', statLabel: 'Protected'
-    },
-    {
-      id: 'udyamsetu', title: 'UdyamSetu', subtitle: 'MSME Accelerator',
-      icon: Briefcase, color: '#a78bfa', route: '/udyam-setu',
-      stat: '25K+', statLabel: 'MSMEs'
-    },
-    {
-      id: 'divyangsahayak', title: 'DivyangSahayak', subtitle: 'Assistive Hub',
-      icon: Activity, color: '#38bdf8', route: '/divyang-sahayak',
-      stat: '50K+', statLabel: 'Sessions'
-    },
-    {
-      id: 'shramikkalyan', title: 'ShramikKalyan', subtitle: 'Worker Protection',
-      icon: Users, color: '#f59e0b', route: '/shramik-kalyan',
-      stat: '₹200Cr+', statLabel: 'Escrowed'
-    },
-    {
-      id: 'vidyasetu', title: 'VidyaSetu', subtitle: 'Education Hub',
-      icon: BookOpen, color: '#60a5fa', route: '/vidya-setu',
-      stat: '10M+', statLabel: 'Students'
-    },
-    {
-      id: 'nyayamitra', title: 'NyayaMitra', subtitle: 'Legal Aid',
-      icon: Scale, color: '#94a3b8', route: '/nyaya-mitra',
-      stat: '500K+', statLabel: 'Cases'
-    },
-    {
-      id: 'arogyadoot', title: 'ArogyaDoot', subtitle: 'Telemedicine',
-      icon: PlusCircle, color: '#f87171', route: '/arogya-doot',
-      stat: '2M+', statLabel: 'Consults'
-    },
-    {
-      id: 'urjavikas', title: 'UrjaVikas', subtitle: 'Green Energy',
-      icon: Sun, color: '#fbbf24', route: '/urja-vikas',
-      stat: '1000+', statLabel: 'MW'
-    },
-    {
-      id: 'pariwahan', title: 'Pariwahan', subtitle: 'Rural Transit',
-      icon: Navigation, color: '#2dd4bf', route: '/pariwahan',
-      stat: '10M+', statLabel: 'Rides'
-    },
-  ];
-
-  // 3D tilt handler
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const card = e.currentTarget;
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    const rotateX = ((y - centerY) / centerY) * -6;
-    const rotateY = ((x - centerX) / centerX) * 6;
-
-    card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
-    card.style.setProperty('--mouse-x', `${(x / rect.width) * 100}%`);
-    card.style.setProperty('--mouse-y', `${(y / rect.height) * 100}%`);
+  // Cmd+K / Ctrl+K Hook
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const handleMouseLeave = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    e.currentTarget.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg) translateY(0)';
-  }, []);
+  // Filter Logic
+  const filteredSchemes = useMemo(() => {
+    return SCHEMES_DB.filter((scheme) => {
+      const matchesCategory = activeCategory === 'All' || scheme.category === activeCategory;
+      const q = searchQuery.toLowerCase();
+      const matchesSearch = 
+        scheme.titleEnglish.toLowerCase().includes(q) || 
+        scheme.titleHindi.toLowerCase().includes(q) || 
+        scheme.description.toLowerCase().includes(q);
+      
+      return matchesCategory && matchesSearch;
+    });
+  }, [searchQuery, activeCategory]);
+
+  // Compute Category Counts
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = { 'All': filteredSchemes.length };
+    CATEGORIES.forEach(c => counts[c] = 0);
+    
+    const searchFilteredOnly = SCHEMES_DB.filter((scheme) => {
+      const q = searchQuery.toLowerCase();
+      return scheme.titleEnglish.toLowerCase().includes(q) || 
+             scheme.titleHindi.toLowerCase().includes(q) || 
+             scheme.description.toLowerCase().includes(q);
+    });
+
+    searchFilteredOnly.forEach(s => {
+      counts[s.category] = (counts[s.category] || 0) + 1;
+    });
+    return counts;
+  }, [searchQuery]);
 
   return (
-    <div className="min-h-screen aurora-bg aurora-animated noise-overlay relative overflow-hidden pb-28">
-      {/* Ambient Orbs */}
-      <div className="orb orb-grape w-[400px] h-[400px] -top-20 right-0" />
-      <div className="orb orb-cyan w-[350px] h-[350px] bottom-40 -left-20" style={{ animationDelay: '7s' }} />
-      <div className="orb orb-pink w-[250px] h-[250px] top-1/2 right-1/3" style={{ animationDelay: '12s' }} />
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 font-sans text-slate-900 dark:text-slate-50 flex flex-col overflow-x-hidden transition-colors">
+      <Header />
 
-      {/* ── Floating Navigation Island ── */}
-      <nav className="nav-island flex items-center gap-4">
-        <button
-          onClick={() => navigate('/')}
-          className="text-white/50 hover:text-white/90 transition-colors flex items-center gap-1.5 text-xs"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Home</span>
-        </button>
-        <div className="h-5 w-px bg-white/10" />
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 to-cyan-400 flex items-center justify-center">
-            <Sparkles className="w-3.5 h-3.5 text-white" />
-          </div>
-          <span className="font-semibold text-white/90 text-sm tracking-wide">Modules</span>
-        </div>
-        <div className="h-5 w-px bg-white/10" />
-        <Badge className="glow-badge bg-white/5 border border-white/10 text-purple-300 text-[10px] px-2 py-0.5 rounded-full">
-          13 Active
-        </Badge>
-      </nav>
+      <main className="relative z-10 flex flex-col flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 pt-28 pb-16">
+        
+        {/* Hero & Search Section */}
+        <div className="flex flex-col items-center text-center mb-10">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white mb-4 tracking-tight">
+            Government Modules
+          </h1>
+          <p className="text-slate-600 dark:text-slate-400 text-lg md:text-xl max-w-2xl mb-8">
+            Access exactly what you need. Search across 300+ highly optimized government schemes and digital public goods.
+          </p>
 
-      {/* ── Hero Header ── */}
-      <div className="relative z-10 text-center pt-28 pb-12 px-4">
-        <h1
-          className="text-gradient-hero leading-none tracking-tight mb-4 animate-float-up"
-          style={{ fontSize: 'clamp(2rem, 5vw, 4rem)', fontWeight: 300 }}
-        >
-          Module <span style={{ fontWeight: 600 }}>Launcher</span>
-        </h1>
-        <p className="text-white/30 text-sm max-w-lg mx-auto animate-float-up" style={{ animationDelay: '100ms' }}>
-          13 AI-powered government service modules. Click any card to launch.
-        </p>
-      </div>
-
-      {/* ── Bento Grid ── */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bento-grid">
-          {modules.map((mod, i) => (
-            <div
-              key={mod.id}
-              onClick={() => navigate(mod.route)}
-              onMouseMove={handleMouseMove}
-              onMouseLeave={handleMouseLeave}
-              className={`
-                glass spotlight-border rounded-3xl p-6 cursor-pointer
-                tilt-card group relative overflow-hidden
-                animate-float-up
-                ${i === 0 ? 'bento-2x' : ''}
-              `}
-              style={{
-                animationDelay: `${i * 60}ms`,
-                transition: 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease',
-              }}
-            >
-              {/* Ambient module tint */}
-              <div
-                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-3xl"
-                style={{ background: `radial-gradient(circle at 30% 30%, ${mod.color}12, transparent 70%)` }}
+          <div className="relative group w-full max-w-2xl">
+            {/* Search Bar Redesign */}
+            <div className="relative flex items-center bg-white dark:bg-slate-800 rounded-lg px-5 py-3 border border-slate-300 dark:border-slate-600 shadow-sm focus-within:ring-2 focus-within:ring-blue-600 focus-within:border-blue-600 transition-all">
+              <Search className="w-6 h-6 text-slate-400 dark:text-slate-500 mr-4 shrink-0" />
+              <input
+                ref={searchInputRef}
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search schemes (e.g., 'Krishi', 'Scholarship')..."
+                className="bg-transparent border-none outline-none text-slate-900 dark:text-white w-full text-lg placeholder:text-slate-400 focus:ring-0"
               />
-
-              {/* Stat watermark */}
-              <div className="stat-watermark">{mod.stat}</div>
-
-              {/* Content */}
-              <div className="relative z-10 h-full flex flex-col">
-                {/* Icon */}
-                <div
-                  className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300"
-                  style={{ background: `${mod.color}18` }}
-                >
-                  <mod.icon className="w-6 h-6" style={{ color: mod.color }} />
-                </div>
-
-                {/* Title */}
-                <h3 className="text-white/90 font-semibold text-base mb-1 group-hover:text-white transition-colors">
-                  {mod.title}
-                </h3>
-                <p className="text-white/30 text-xs mb-4 group-hover:text-white/50 transition-colors tracking-wider uppercase">
-                  {mod.subtitle}
-                </p>
-
-                {/* Spacer */}
-                <div className="flex-1" />
-
-                {/* Bottom row */}
-                <div className="flex items-center justify-between mt-2">
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-mono-stat text-white/60 text-xs font-medium">{mod.stat}</span>
-                    <span className="text-white/25 text-[10px]">{mod.statLabel}</span>
-                  </div>
-                  <div
-                    className="w-8 h-8 rounded-full flex items-center justify-center bg-white/5 group-hover:bg-white/10 transition-all duration-300 group-hover:translate-x-1"
-                  >
-                    <ArrowRight className="w-3.5 h-3.5 text-white/40 group-hover:text-white/80 transition-colors" />
-                  </div>
-                </div>
-              </div>
+              {/* Tactile Keyboard Key Badge with whileTap */}
+              <motion.div 
+                whileTap={{ scale: 0.90 }}
+                onClick={() => searchInputRef.current?.focus()}
+                className="hidden sm:flex items-center ml-4 px-2.5 py-1 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 shadow-[0_2px_0_rgba(203,213,225,1)] dark:shadow-[0_2px_0_rgba(71,85,105,1)] rounded text-slate-500 dark:text-slate-300 text-xs font-mono font-bold cursor-pointer select-none"
+              >
+                <Command className="w-3 h-3 mr-1" /> K
+              </motion.div>
             </div>
+          </div>
+        </div>
+
+        {/* Underline Category Tabs */}
+        <div className="flex gap-6 mb-8 overflow-x-auto pb-0 border-b border-slate-200 dark:border-slate-700 scrollbar-hide justify-start md:justify-center relative">
+          
+          <button
+            onClick={() => setActiveCategory('All')}
+            className={`relative flex items-center pb-4 text-sm font-semibold transition-colors whitespace-nowrap outline-none hover:text-slate-900 dark:hover:text-white ${
+              activeCategory === 'All' 
+                ? 'text-blue-700 dark:text-blue-400' 
+                : 'text-slate-500 dark:text-slate-400'
+            }`}
+          >
+            All Modules
+            <span className="ml-2 px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+              {categoryCounts['All'] || 0}
+            </span>
+            {activeCategory === 'All' && (
+              <motion.div 
+                layoutId="activeTabUnderline" 
+                className="absolute bottom-[-1px] left-0 right-0 h-[3px] bg-blue-600 dark:bg-blue-400 rounded-t-sm" 
+              />
+            )}
+          </button>
+
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              className={`relative flex items-center pb-4 text-sm font-semibold transition-colors whitespace-nowrap outline-none hover:text-slate-900 dark:hover:text-white ${
+                activeCategory === cat 
+                  ? 'text-blue-700 dark:text-blue-400' 
+                  : 'text-slate-500 dark:text-slate-400'
+              }`}
+            >
+              <CategoryIcon category={cat} className="w-4 h-4 mr-2" />
+              {cat}
+              <span className="ml-2 px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+                {categoryCounts[cat] || 0}
+              </span>
+              {activeCategory === cat && (
+                <motion.div 
+                  layoutId="activeTabUnderline" 
+                  className="absolute bottom-[-1px] left-0 right-0 h-[3px] bg-blue-600 dark:bg-blue-400 rounded-t-sm" 
+                />
+              )}
+            </button>
           ))}
         </div>
-      </div>
 
-      {/* ── Floating Bottom Dock ── */}
-      <div className="bottom-dock">
-        <button
-          onClick={() => navigate('/')}
-          className="dock-item"
-          title="Home"
-        >
-          <Sparkles className="w-4 h-4" />
-        </button>
-        <div className="w-px h-5 bg-white/10 mx-1" />
-        {modules.slice(0, 8).map((mod, i) => (
-          <button
-            key={i}
-            onClick={() => navigate(mod.route)}
-            className="dock-item"
-            title={mod.title}
-          >
-            <mod.icon className="w-4 h-4" />
-          </button>
-        ))}
-      </div>
+        {/* Structured Grid Card Layout with Animations */}
+        <div className="flex-1 w-full">
+          {filteredSchemes.length === 0 ? (
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }}
+              className="flex flex-col items-center justify-center h-64 text-center p-8 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm"
+            >
+              <Search className="w-12 h-12 text-slate-300 dark:text-slate-600 mb-4" />
+              <h3 className="text-xl font-bold text-slate-700 dark:text-slate-300 mb-2">No Modules Found</h3>
+              <p className="text-slate-500 dark:text-slate-400">Try adjusting your search or category filters.</p>
+            </motion.div>
+          ) : (
+            <motion.div 
+              variants={containerVariants}
+              initial="hidden"
+              animate="show"
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+              <AnimatePresence mode="popLayout">
+                {filteredSchemes.map((scheme) => (
+                  <motion.div
+                    layout
+                    variants={cardVariants}
+                    initial="hidden"
+                    animate="show"
+                    exit="exit"
+                    whileHover={{ y: -4, scale: 1.01 }}
+                    whileTap={{ scale: 0.98 }}
+                    key={scheme.id}
+                    className="group flex flex-col justify-between bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md transition-shadow outline-none focus-within:ring-2 focus-within:ring-blue-600 cursor-pointer h-full relative overflow-hidden"
+                    onClick={() => navigate(`/scheme/${scheme.id}`)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => e.key === 'Enter' && navigate(`/scheme/${scheme.id}`)}
+                  >
+                    {/* Top Structural Category Ribbon */}
+                    <div className={`absolute top-0 left-0 right-0 h-1 ${getCategoryRibbonColor(scheme.category)}`} />
+                    
+                    <div className="p-6 pb-5">
+                      <div className="flex items-center justify-between gap-3 mb-4 mt-1">
+                        <span className="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-widest flex items-center">
+                          <CategoryIcon category={scheme.category} className="w-3.5 h-3.5 mr-2" />
+                          {scheme.category}
+                        </span>
+                        {!scheme.isActive && (
+                          <span className="bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-600 text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded">
+                            Inactive
+                          </span>
+                        )}
+                      </div>
+                      
+                      {/* High-contrast Titles */}
+                      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+                        {scheme.titleEnglish}
+                      </h3>
+                      <h4 className="text-sm font-medium text-slate-600 dark:text-slate-400 font-vernacular mb-3">
+                        {scheme.titleHindi}
+                      </h4>
+                      {/* Readable muted description */}
+                      <p className="text-slate-600 dark:text-slate-400 text-sm line-clamp-3 leading-relaxed">
+                        {scheme.description}
+                      </p>
+                    </div>
+                    
+                    {/* Distinctly Shaded Footer Section for Metrics */}
+                    <div className="pt-4 pb-4 px-6 mt-auto bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                      <div className="flex flex-col">
+                        <span className="text-slate-500 dark:text-slate-400 text-[10px] uppercase font-bold tracking-wider mb-1">
+                          {scheme.metricText}
+                        </span>
+                        {/* Authoritative Font Weight */}
+                        <span className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
+                          {scheme.metricValue}
+                        </span>
+                      </div>
+                      <div className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:border-blue-600 group-hover:text-white text-slate-400 transition-colors shadow-sm">
+                        <ChevronRight className="w-4 h-4" />
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
+          )}
+        </div>
+      </main>
     </div>
   );
 };

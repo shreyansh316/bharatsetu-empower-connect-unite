@@ -1,36 +1,36 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Mail, Lock, Eye, EyeOff, User } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ArrowRight, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const EmailPasswordRegister = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
-  });
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+
+  const currentTint = '#a78bfa'; // Email tab tint
+  const buttonStyle = {
+    background: `linear-gradient(135deg, ${currentTint}, ${currentTint}aa)`,
+    boxShadow: `0 8px 32px ${currentTint}30`,
+  };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+    if (!email || !password) {
       toast({
         title: "Missing Information",
-        description: "Please fill in all fields",
+        description: "Please enter both email and password",
         variant: "destructive"
       });
       return;
     }
 
-    if (!formData.email.includes('@')) {
+    if (!email.includes('@')) {
       toast({
         title: "Invalid Email",
         description: "Please enter a valid email address",
@@ -39,140 +39,91 @@ const EmailPasswordRegister = () => {
       return;
     }
 
-    if (formData.password.length < 6) {
-      toast({
-        title: "Password Too Short",
-        description: "Password must be at least 6 characters",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      toast({
-        title: "Passwords Don't Match",
-        description: "Please make sure both passwords match",
-        variant: "destructive"
-      });
-      return;
-    }
-
     setIsLoading(true);
+    // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
       toast({
-        title: "Registration Successful",
-        description: "Welcome to BharatSetu!",
+        title: "Account Created",
+        description: "Welcome to BharatSetu.",
       });
-      window.location.href = '/account';
+      setTimeout(() => window.location.href = '/', 1000);
     }, 2000);
   };
 
   return (
     <form onSubmit={handleRegister} className="space-y-6">
-      <div className="space-y-2">
-        <Label htmlFor="name">Full Name</Label>
+      <div className="space-y-3 relative group">
+        <Label htmlFor="email" className="group-focus-within:-translate-y-1 transition-transform inline-block">Email Address</Label>
         <div className="relative">
-          <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <Input
-            id="name"
-            type="text"
-            placeholder="Enter your full name"
-            value={formData.name}
-            onChange={(e) => setFormData({...formData, name: e.target.value})}
-            className="pl-10"
-            required
-          />
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="email">Email Address</Label>
-        <div className="relative">
-          <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/40 w-4 h-4 z-10" />
           <Input
             id="email"
             type="email"
-            placeholder="Enter your email"
-            value={formData.email}
-            onChange={(e) => setFormData({...formData, email: e.target.value})}
-            className="pl-10"
+            placeholder="name@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="pl-12 h-12 text-base bg-transparent border-0 border-b-2 border-white/10 rounded-none focus-visible:ring-0 focus-visible:border-purple-400 focus-visible:bg-white/[0.02]"
             required
           />
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
+      <div className="space-y-3 relative group">
+        <Label htmlFor="password" className="group-focus-within:-translate-y-1 transition-transform inline-block">Create Password</Label>
         <div className="relative">
-          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/40 w-4 h-4 z-10" />
           <Input
             id="password"
             type={showPassword ? "text" : "password"}
-            placeholder="Create a password"
-            value={formData.password}
-            onChange={(e) => setFormData({...formData, password: e.target.value})}
-            className="pl-10 pr-10"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="pl-12 pr-12 h-12 text-base bg-transparent border-0 border-b-2 border-white/10 rounded-none focus-visible:ring-0 focus-visible:border-purple-400 focus-visible:bg-white/[0.02] tracking-widest"
             required
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/40 hover:text-white/80 transition-colors z-10"
           >
             {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
           </button>
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="confirmPassword">Confirm Password</Label>
-        <div className="relative">
-          <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <Input
-            id="confirmPassword"
-            type={showConfirmPassword ? "text" : "password"}
-            placeholder="Confirm your password"
-            value={formData.confirmPassword}
-            onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
-            className="pl-10 pr-10"
-            required
-          />
-          <button
-            type="button"
-            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-          >
-            {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-          </button>
+      <div className="flex items-center justify-between pt-2">
+        <div className="flex items-center space-x-2 cursor-pointer group">
+          <div className="relative flex items-center justify-center w-4 h-4">
+            <input
+              type="checkbox"
+              id="updates"
+              className="peer appearance-none w-4 h-4 border border-white/20 rounded bg-white/5 checked:bg-purple-500 checked:border-purple-500 transition-colors cursor-pointer"
+            />
+            <div className="absolute pointer-events-none opacity-0 peer-checked:opacity-100 text-white flex items-center justify-center transition-opacity">
+              <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                <path d="M1 4L4 7L9 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+          </div>
+          <Label htmlFor="updates" className="text-xs text-white/50 group-hover:text-white/80 transition-colors cursor-pointer uppercase tracking-wider">
+            Receive Updates
+          </Label>
         </div>
-      </div>
-
-      <div className="flex items-start space-x-2">
-        <input
-          type="checkbox"
-          id="terms"
-          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mt-1"
-          required
-        />
-        <Label htmlFor="terms" className="text-sm text-gray-600 leading-relaxed">
-          I agree to the Terms of Service and Privacy Policy
-        </Label>
       </div>
 
       <Button 
         type="submit" 
-        className="w-full bg-green-600 hover:bg-green-700"
-        disabled={isLoading}
+        disabled={isLoading || !email || !password}
+        className="w-full mt-8 py-6 rounded-full text-sm font-semibold tracking-wide relative overflow-hidden group transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.97] active:shadow-none"
+        style={buttonStyle}
       >
-        {isLoading ? (
-          <>
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-            Creating Account...
-          </>
-        ) : (
-          'Create Account'
-        )}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" />
+        <span className="relative z-10 flex items-center">
+          {isLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+          {isLoading ? 'Encrypting...' : 'Create Account'}
+        </span>
+        {!isLoading && <ArrowRight className="w-4 h-4 ml-2 relative z-10" />}
       </Button>
     </form>
   );

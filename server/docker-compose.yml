@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  otp-server:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - VITE_OTP_SERVER_PORT=5000
+      - SMS_PROVIDER=console
+      - CORS_ORIGIN=http://localhost:5173
+      # Uncomment and fill these in for real SMS
+      # - TWILIO_ACCOUNT_SID=your_sid
+      # - TWILIO_AUTH_TOKEN=your_token
+      # - TWILIO_PHONE_NUMBER=your_number
+    restart: unless-stopped

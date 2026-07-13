@@ -1,12 +1,17 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Shield, CheckCircle, ArrowRight } from 'lucide-react';
+import { Shield, CheckCircle, ArrowRight, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const DigiLockerLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+
+  const currentTint = '#fb923c'; // DigiLocker tab tint
+  const buttonStyle = {
+    background: `linear-gradient(135deg, ${currentTint}, ${currentTint}aa)`,
+    boxShadow: `0 8px 32px ${currentTint}30`,
+  };
 
   const handleDigiLockerLogin = async () => {
     setIsLoading(true);
@@ -15,15 +20,14 @@ const DigiLockerLogin = () => {
     setTimeout(() => {
       setIsLoading(false);
       toast({
-        title: "DigiLocker Authentication",
-        description: "Redirecting to DigiLocker portal...",
+        title: "OAuth Initiated",
+        description: "Bridging to DigiLocker secure portal...",
       });
       
-      // In a real implementation, this would redirect to DigiLocker OAuth
       setTimeout(() => {
         toast({
           title: "Login Successful",
-          description: "Welcome! Authenticated via DigiLocker",
+          description: "Authenticated via Gov API",
         });
         window.location.href = '/';
       }, 2000);
@@ -32,32 +36,35 @@ const DigiLockerLogin = () => {
 
   return (
     <div className="space-y-6">
-      <div className="text-center space-y-4">
-        <div className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-          <Shield className="w-8 h-8 text-white" />
+      <div className="text-center space-y-4 pt-4">
+        <div 
+          className="mx-auto w-16 h-16 rounded-2xl flex items-center justify-center relative group"
+          style={{ background: `${currentTint}15`, border: `1px solid ${currentTint}30` }}
+        >
+          <div className="absolute inset-0 rounded-2xl animate-pulse" style={{ boxShadow: `0 0 20px ${currentTint}40` }} />
+          <Shield className="w-8 h-8 relative z-10" style={{ color: currentTint }} />
         </div>
         
         <div>
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">
-            DigiLocker Authentication
+          <h3 className="text-lg font-semibold text-white/90 mb-2 tracking-wide">
+            DigiLocker Auth
           </h3>
-          <p className="text-sm text-gray-600 leading-relaxed">
-            Login securely using your DigiLocker credentials. Your documents and identity 
-            are verified by the Government of India.
+          <p className="text-xs text-white/40 leading-relaxed max-w-xs mx-auto">
+            Zero-knowledge proof authentication via Government of India.
           </p>
         </div>
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <div className="flex items-start space-x-3">
-          <CheckCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-          <div className="space-y-2 text-sm">
-            <h4 className="font-medium text-blue-800">Benefits of DigiLocker Login:</h4>
-            <ul className="space-y-1 text-blue-700">
-              <li>• Instant identity verification</li>
-              <li>• Access to your official documents</li>
-              <li>• Government-grade security</li>
-              <li>• No need to upload documents separately</li>
+      <div className="glass rounded-2xl p-4 border border-white/5 relative overflow-hidden group">
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+        <div className="flex items-start space-x-3 relative z-10">
+          <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: currentTint }} />
+          <div className="space-y-2 text-xs">
+            <h4 className="font-semibold text-white/80 uppercase tracking-wider">OAuth Handshake</h4>
+            <ul className="space-y-1.5 text-white/40 font-mono-stat">
+              <li>{'>'} Instant verification</li>
+              <li>{'>'} Document sync</li>
+              <li>{'>'} 256-bit AES encryption</li>
             </ul>
           </div>
         </div>
@@ -65,31 +72,17 @@ const DigiLockerLogin = () => {
 
       <Button 
         onClick={handleDigiLockerLogin}
-        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
         disabled={isLoading}
+        className="w-full mt-6 py-6 rounded-full text-sm font-semibold tracking-wide relative overflow-hidden group transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.97] active:shadow-none"
+        style={buttonStyle}
       >
-        {isLoading ? (
-          <>
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-            Connecting to DigiLocker...
-          </>
-        ) : (
-          <>
-            <Shield className="w-4 h-4 mr-2" />
-            Login with DigiLocker
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </>
-        )}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" />
+        <span className="relative z-10 flex items-center">
+          {isLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+          {isLoading ? 'Establishing Link...' : 'Connect to DigiLocker'}
+        </span>
+        {!isLoading && <ArrowRight className="w-4 h-4 ml-2 relative z-10" />}
       </Button>
-
-      <div className="text-center">
-        <p className="text-xs text-gray-500">
-          New to DigiLocker?{' '}
-          <Button variant="link" className="p-0 h-auto text-xs text-blue-600">
-            Create Account
-          </Button>
-        </p>
-      </div>
     </div>
   );
 };

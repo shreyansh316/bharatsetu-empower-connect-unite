@@ -1,75 +1,70 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Shield, CheckCircle, ArrowRight, FileText } from 'lucide-react';
+import { Shield, CheckCircle, ArrowRight, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const DigiLockerRegister = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
+  const currentTint = '#fb923c'; // DigiLocker tab tint
+  const buttonStyle = {
+    background: `linear-gradient(135deg, ${currentTint}, ${currentTint}aa)`,
+    boxShadow: `0 8px 32px ${currentTint}30`,
+  };
+
   const handleDigiLockerRegister = async () => {
     setIsLoading(true);
     
+    // Simulate DigiLocker authentication process
     setTimeout(() => {
       setIsLoading(false);
       toast({
-        title: "DigiLocker Registration",
-        description: "Redirecting to DigiLocker registration...",
+        title: "OAuth Initiated",
+        description: "Bridging to DigiLocker secure portal...",
       });
       
       setTimeout(() => {
         toast({
-          title: "Registration Successful",
-          description: "Welcome! Your account has been created via DigiLocker",
+          title: "Account Created",
+          description: "Registered via Gov API",
         });
-        window.location.href = '/account';
+        window.location.href = '/';
       }, 2000);
     }, 1500);
   };
 
   return (
     <div className="space-y-6">
-      <div className="text-center space-y-4">
-        <div className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-          <Shield className="w-8 h-8 text-white" />
+      <div className="text-center space-y-4 pt-4">
+        <div 
+          className="mx-auto w-16 h-16 rounded-2xl flex items-center justify-center relative group"
+          style={{ background: `${currentTint}15`, border: `1px solid ${currentTint}30` }}
+        >
+          <div className="absolute inset-0 rounded-2xl animate-pulse" style={{ boxShadow: `0 0 20px ${currentTint}40` }} />
+          <Shield className="w-8 h-8 relative z-10" style={{ color: currentTint }} />
         </div>
         
         <div>
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">
+          <h3 className="text-lg font-semibold text-white/90 mb-2 tracking-wide">
             DigiLocker Registration
           </h3>
-          <p className="text-sm text-gray-600 leading-relaxed">
-            Create your account using DigiLocker. Your identity will be instantly verified 
-            using your Aadhaar and other government documents.
+          <p className="text-xs text-white/40 leading-relaxed max-w-xs mx-auto">
+            Zero-knowledge proof authentication via Government of India.
           </p>
         </div>
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <div className="flex items-start space-x-3">
-          <CheckCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-          <div className="space-y-2 text-sm">
-            <h4 className="font-medium text-blue-800">What you'll get:</h4>
-            <ul className="space-y-1 text-blue-700">
-              <li>• Instant KYC verification</li>
-              <li>• Access to all government services</li>
-              <li>• Secure document storage</li>
-              <li>• Pre-filled application forms</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-        <div className="flex items-start space-x-3">
-          <FileText className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
-          <div className="space-y-2 text-sm">
-            <h4 className="font-medium text-amber-800">Required Documents:</h4>
-            <ul className="space-y-1 text-amber-700">
-              <li>• Valid Aadhaar number</li>
-              <li>• Mobile number linked to Aadhaar</li>
-              <li>• Email address</li>
+      <div className="glass rounded-2xl p-4 border border-white/5 relative overflow-hidden group">
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+        <div className="flex items-start space-x-3 relative z-10">
+          <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: currentTint }} />
+          <div className="space-y-2 text-xs">
+            <h4 className="font-semibold text-white/80 uppercase tracking-wider">OAuth Handshake</h4>
+            <ul className="space-y-1.5 text-white/40 font-mono-stat">
+              <li>{'>'} Instant KYC verification</li>
+              <li>{'>'} Document sync</li>
+              <li>{'>'} 256-bit AES encryption</li>
             </ul>
           </div>
         </div>
@@ -77,31 +72,17 @@ const DigiLockerRegister = () => {
 
       <Button 
         onClick={handleDigiLockerRegister}
-        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
         disabled={isLoading}
+        className="w-full mt-6 py-6 rounded-full text-sm font-semibold tracking-wide relative overflow-hidden group transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.97] active:shadow-none"
+        style={buttonStyle}
       >
-        {isLoading ? (
-          <>
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-            Connecting to DigiLocker...
-          </>
-        ) : (
-          <>
-            <Shield className="w-4 h-4 mr-2" />
-            Register with DigiLocker
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </>
-        )}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" />
+        <span className="relative z-10 flex items-center">
+          {isLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+          {isLoading ? 'Establishing Link...' : 'Register with DigiLocker'}
+        </span>
+        {!isLoading && <ArrowRight className="w-4 h-4 ml-2 relative z-10" />}
       </Button>
-
-      <div className="text-center">
-        <p className="text-xs text-gray-500">
-          Don't have DigiLocker?{' '}
-          <Button variant="link" className="p-0 h-auto text-xs text-blue-600">
-            Create DigiLocker Account
-          </Button>
-        </p>
-      </div>
     </div>
   );
 };

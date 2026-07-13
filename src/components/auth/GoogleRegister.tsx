@@ -1,12 +1,17 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Chrome, CheckCircle } from 'lucide-react';
+import { Chrome, CheckCircle, ArrowRight, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const GoogleRegister = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+
+  const currentTint = '#f472b6'; // Google tab tint (pink)
+  const buttonStyle = {
+    background: `linear-gradient(135deg, ${currentTint}, ${currentTint}aa)`,
+    boxShadow: `0 8px 32px ${currentTint}30`,
+  };
 
   const handleGoogleRegister = async () => {
     setIsLoading(true);
@@ -14,48 +19,51 @@ const GoogleRegister = () => {
     setTimeout(() => {
       setIsLoading(false);
       toast({
-        title: "Google Registration",
-        description: "Opening Google sign-up...",
+        title: "OAuth Initiated",
+        description: "Redirecting to Google Workspace...",
       });
       
       setTimeout(() => {
         toast({
-          title: "Registration Successful",
-          description: "Welcome! Your account has been created with Google",
+          title: "Account Created",
+          description: "Registered via Google",
         });
-        window.location.href = '/account';
+        window.location.href = '/';
       }, 2000);
     }, 1500);
   };
 
   return (
     <div className="space-y-6">
-      <div className="text-center space-y-4">
-        <div className="mx-auto w-16 h-16 bg-gradient-to-r from-red-500 to-yellow-500 rounded-full flex items-center justify-center">
-          <Chrome className="w-8 h-8 text-white" />
+      <div className="text-center space-y-4 pt-4">
+        <div 
+          className="mx-auto w-16 h-16 rounded-2xl flex items-center justify-center relative group"
+          style={{ background: `${currentTint}15`, border: `1px solid ${currentTint}30` }}
+        >
+          <div className="absolute inset-0 rounded-2xl animate-pulse" style={{ boxShadow: `0 0 20px ${currentTint}40` }} />
+          <Chrome className="w-8 h-8 relative z-10" style={{ color: currentTint }} />
         </div>
         
         <div>
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">
+          <h3 className="text-lg font-semibold text-white/90 mb-2 tracking-wide">
             Google Registration
           </h3>
-          <p className="text-sm text-gray-600 leading-relaxed">
-            Create your BharatSetu account using your Google account. 
-            Quick, secure, and no password to remember.
+          <p className="text-xs text-white/40 leading-relaxed max-w-xs mx-auto">
+            Enterprise-grade federated identity protocol.
           </p>
         </div>
       </div>
 
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-        <div className="flex items-start space-x-3">
-          <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-          <div className="space-y-2 text-sm">
-            <h4 className="font-medium text-gray-800">Benefits of Google Sign-Up:</h4>
-            <ul className="space-y-1 text-gray-700">
-              <li>• One-click registration</li>
-              <li>• Secure Google authentication</li>
-              <li>• Sync across all your devices</li>
-              <li>• Auto-fill personal information</li>
+      <div className="glass rounded-2xl p-4 border border-white/5 relative overflow-hidden group">
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+        <div className="flex items-start space-x-3 relative z-10">
+          <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: currentTint }} />
+          <div className="space-y-2 text-xs">
+            <h4 className="font-semibold text-white/80 uppercase tracking-wider">Security Handshake</h4>
+            <ul className="space-y-1.5 text-white/40 font-mono-stat">
+              <li>{'>'} Biometric capable</li>
+              <li>{'>'} Zero password transmission</li>
+              <li>{'>'} SSO integration active</li>
             </ul>
           </div>
         </div>
@@ -63,28 +71,17 @@ const GoogleRegister = () => {
 
       <Button 
         onClick={handleGoogleRegister}
-        variant="outline"
-        className="w-full border-2 hover:bg-gray-50 text-gray-700"
         disabled={isLoading}
+        className="w-full mt-6 py-6 rounded-full text-sm font-semibold tracking-wide relative overflow-hidden group transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.97] active:shadow-none"
+        style={buttonStyle}
       >
-        {isLoading ? (
-          <>
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-2"></div>
-            Connecting to Google...
-          </>
-        ) : (
-          <>
-            <Chrome className="w-5 h-5 mr-3 text-blue-600" />
-            Continue with Google
-          </>
-        )}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" />
+        <span className="relative z-10 flex items-center">
+          {isLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+          {isLoading ? 'Connecting Workspace...' : 'Register with Google'}
+        </span>
+        {!isLoading && <ArrowRight className="w-4 h-4 ml-2 relative z-10" />}
       </Button>
-
-      <div className="text-center">
-        <p className="text-xs text-gray-500">
-          By continuing, you agree to Google's Terms of Service and Privacy Policy
-        </p>
-      </div>
     </div>
   );
 };

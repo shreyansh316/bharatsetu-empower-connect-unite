@@ -36,31 +36,50 @@ const GoogleTranslate: React.FC = () => {
       setIsLoaded(true);
     };
 
-    // Add custom styles for Google Translate
+    // Add custom styles for Google Translate (Phase 5 Dark Mode Gen-Z overhaul)
     const addCustomStyles = () => {
       const style = document.createElement('style');
       style.innerHTML = `
         .google-translate-container .goog-te-gadget {
           font-family: inherit !important;
           font-size: 12px !important;
+          color: rgba(255, 255, 255, 0.6) !important;
         }
         .google-translate-container .goog-te-gadget-simple {
-          background: transparent !important;
-          border: 1px solid #e2e8f0 !important;
-          border-radius: 6px !important;
-          padding: 4px 8px !important;
-          font-size: 12px !important;
+          background: rgba(255, 255, 255, 0.05) !important;
+          backdrop-filter: blur(12px) !important;
+          border: 1px solid rgba(255, 255, 255, 0.1) !important;
+          border-radius: 12px !important;
+          padding: 8px 12px !important;
+          font-size: 14px !important;
+          transition: all 0.3s ease !important;
+        }
+        .google-translate-container .goog-te-gadget-simple:hover {
+          background: rgba(255, 255, 255, 0.1) !important;
+          border-color: rgba(255, 255, 255, 0.2) !important;
+          box-shadow: 0 0 15px rgba(255, 153, 51, 0.2) !important;
         }
         .google-translate-container .goog-te-gadget-simple .goog-te-menu-value {
-          color: #374151 !important;
+          color: rgba(255, 255, 255, 0.9) !important;
           font-family: inherit !important;
         }
         .google-translate-container .goog-te-gadget-icon {
           background-image: none !important;
-          margin-right: 4px !important;
+          display: none !important;
         }
         .goog-te-banner-frame {
           display: none !important;
+        }
+        /* Overriding Google's iframe tooltip */
+        .goog-tooltip {
+          display: none !important;
+        }
+        .goog-tooltip:hover {
+          display: none !important;
+        }
+        .goog-text-highlight {
+          background-color: transparent !important;
+          box-shadow: none !important;
         }
         body {
           top: 0 !important;

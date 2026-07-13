@@ -126,22 +126,29 @@ export default function NariShakti() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white pb-12">
+    <div className="min-h-screen aurora-bg aurora-animated noise-overlay relative pb-12 overflow-hidden">
+      {/* Background Watermark */}
+      <div className="fixed inset-0 flex items-center justify-center pointer-events-none select-none z-0">
+        <span className="text-gradient-hero" style={{ fontSize: '15vw', fontWeight: 100, opacity: 0.03 }}>
+          NARI_SHAKTI
+        </span>
+      </div>
+
       {/* Real NariShakti Header */}
-      <header className="bg-white border-b sticky top-0 z-10 shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+      <header className="glass-strong border-b border-white/5 sticky top-0 z-20">
+        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between relative z-10">
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate('/modules')}>
+            <Button variant="ghost" size="icon" onClick={() => navigate('/modules')} className="text-white/50 hover:text-white hover:bg-white/10">
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <div>
-              <h1 className="text-2xl font-bold text-pink-700">NariShakti Portal</h1>
-              <p className="text-sm text-gray-500">Women's Safety & Empowerment</p>
+              <h1 className="text-2xl font-bold text-white/90">NariShakti Portal</h1>
+              <p className="text-xs text-white/40 tracking-widest uppercase mt-0.5">Women's Safety & Empowerment</p>
             </div>
           </div>
           <Button 
             variant="outline" 
-            className="border-gray-300 hover:bg-gray-100"
+            className="border-white/20 bg-white/5 text-white/70 hover:bg-white/10 hover:text-white transition-all rounded-full px-6"
             onClick={() => setDiscreetMode(true)}
           >
             <EyeOff className="w-4 h-4 mr-2" />
@@ -150,115 +157,115 @@ export default function NariShakti() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 mt-8">
+      <main className="max-w-4xl mx-auto px-4 mt-8 relative z-10">
         <Tabs defaultValue="sos">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="sos"><ShieldAlert className="w-4 h-4 mr-2"/> SOS Guardian</TabsTrigger>
-            <TabsTrigger value="route"><Navigation className="w-4 h-4 mr-2"/> Safe Route</TabsTrigger>
-            <TabsTrigger value="finance"><Briefcase className="w-4 h-4 mr-2"/> Micro-Incubator</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 glass rounded-2xl p-1 mb-8">
+            <TabsTrigger value="sos" className="rounded-xl data-[state=active]:bg-white/10 data-[state=active]:text-white text-white/50"><ShieldAlert className="w-4 h-4 mr-2"/> Guardian</TabsTrigger>
+            <TabsTrigger value="route" className="rounded-xl data-[state=active]:bg-white/10 data-[state=active]:text-white text-white/50"><Navigation className="w-4 h-4 mr-2"/> Route</TabsTrigger>
+            <TabsTrigger value="finance" className="rounded-xl data-[state=active]:bg-white/10 data-[state=active]:text-white text-white/50"><Briefcase className="w-4 h-4 mr-2"/> Finance</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="sos" className="mt-6">
-            <Card className="border-pink-200">
-              <CardHeader>
-                <CardTitle>SOS Audio Analytics</CardTitle>
-                <CardDescription>Uses on-device Edge AI to detect distress sounds and automatically trigger alerts without you touching the phone.</CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-col items-center py-8">
+          <TabsContent value="sos" className="mt-0">
+            <div className="glass spotlight-border rounded-3xl p-8 tilt-card transition-transform duration-500 hover:scale-[1.01]">
+              <div className="mb-8 border-b border-white/10 pb-6">
+                <h2 className="text-xl font-semibold text-white/90">SOS Audio Analytics</h2>
+                <p className="text-sm text-white/50 mt-2">Uses on-device Edge AI to detect distress sounds and automatically trigger alerts.</p>
+              </div>
+              <div className="flex flex-col items-center py-8">
                 <div 
-                  className={`w-32 h-32 rounded-full flex items-center justify-center cursor-pointer transition-all ${
-                    isRecording ? 'bg-red-100 animate-pulse' : 'bg-gray-100 hover:bg-pink-100'
+                  className={`w-32 h-32 rounded-full flex items-center justify-center cursor-pointer transition-all duration-500 relative group ${
+                    isRecording ? 'bg-red-500/20 shadow-[0_0_40px_rgba(239,68,68,0.3)]' : 'bg-white/5 hover:bg-white/10 border border-white/10'
                   }`}
                   onClick={() => setIsRecording(!isRecording)}
                 >
+                  {isRecording && <div className="absolute inset-0 rounded-full animate-ping bg-red-500/20" />}
                   {isRecording ? (
-                    <Mic className="w-12 h-12 text-red-600" />
+                    <Mic className="w-12 h-12 text-red-400 relative z-10" />
                   ) : (
-                    <MicOff className="w-12 h-12 text-gray-400" />
+                    <MicOff className="w-12 h-12 text-white/40 relative z-10 group-hover:text-white/80 transition-colors" />
                   )}
                 </div>
-                <h3 className="mt-6 font-semibold text-lg">
-                  {isRecording ? 'Listening for distress keywords...' : 'Tap to Activate Guardian Mode'}
+                <h3 className="mt-8 font-mono-stat text-sm text-white/70 tracking-widest uppercase">
+                  {isRecording ? 'Listening for distress...' : 'Activate Guardian'}
                 </h3>
                 {isRecording && (
-                  <div className="w-full max-w-xs mt-6">
-                    <div className="flex justify-between text-xs text-gray-500 mb-1">
-                      <span>Audio Level</span>
-                      <span>{Math.round(audioLevel)}%</span>
+                  <div className="w-full max-w-xs mt-8 glass rounded-xl p-4">
+                    <div className="flex justify-between text-xs text-white/50 mb-3 font-mono-stat uppercase">
+                      <span>Signal</span>
+                      <span className="text-cyan-400">{Math.round(audioLevel)}%</span>
                     </div>
-                    <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
                       <div 
-                        className={`h-full transition-all duration-300 ${audioLevel > 80 ? 'bg-red-500' : 'bg-green-500'}`} 
+                        className={`h-full transition-all duration-300 ${audioLevel > 80 ? 'bg-red-500 shadow-[0_0_10px_#ef4444]' : 'bg-cyan-400 shadow-[0_0_10px_#22d3ee]'}`} 
                         style={{ width: `${audioLevel}%` }}
                       />
                     </div>
                   </div>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </TabsContent>
           
-          <TabsContent value="route" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>AI Safety Route Mapping</CardTitle>
-                <CardDescription>Finds the safest walking paths based on lighting, crime data, and active community check-ins.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="bg-gray-100 h-64 rounded-lg flex flex-col items-center justify-center border-2 border-dashed border-gray-300">
-                  <Map className="w-12 h-12 text-gray-400 mb-4" />
-                  <p className="text-gray-500">Interactive Map Interface</p>
-                  <Badge variant="outline" className="mt-2 bg-white">
-                    Simulating safe route generation...
+          <TabsContent value="route" className="mt-0">
+            <div className="glass spotlight-border rounded-3xl p-8 tilt-card transition-transform duration-500 hover:scale-[1.01]">
+              <div className="mb-8 border-b border-white/10 pb-6">
+                <h2 className="text-xl font-semibold text-white/90">AI Safety Route Mapping</h2>
+                <p className="text-sm text-white/50 mt-2">Finds the safest walking paths based on lighting, crime data, and check-ins.</p>
+              </div>
+              <div>
+                <div className="bg-black/40 h-64 rounded-2xl flex flex-col items-center justify-center border border-white/10 relative overflow-hidden group">
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-cyan-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                  <Map className="w-12 h-12 text-white/20 mb-4" />
+                  <p className="text-white/40 font-mono-stat text-sm tracking-widest uppercase">Map Telemetry</p>
+                  <Badge variant="outline" className="mt-4 border-cyan-400/30 text-cyan-400 bg-cyan-400/10">
+                    Simulating routes...
                   </Badge>
                 </div>
                 <div className="mt-6 space-y-4">
-                  <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
+                  <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-colors">
                     <div>
-                      <h4 className="font-semibold text-green-800">Main Street via Park Ave</h4>
-                      <p className="text-sm text-green-600">Safest Route • Well Lit • Active Police Patrol</p>
+                      <h4 className="font-semibold text-white/90">Main Street via Park Ave</h4>
+                      <p className="text-xs text-white/50 mt-1 font-mono-stat">Safest • Well Lit • Active Patrol</p>
                     </div>
-                    <Button variant="secondary" className="bg-green-200 text-green-800 hover:bg-green-300">Start Navigation</Button>
+                    <Button variant="secondary" className="bg-white/10 text-white hover:bg-white/20 rounded-full text-xs">Navigate</Button>
                   </div>
-                  <div className="flex items-center justify-between p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                  <div className="flex items-center justify-between p-4 bg-red-500/5 rounded-xl border border-red-500/20 hover:bg-red-500/10 transition-colors">
                     <div>
-                      <h4 className="font-semibold text-yellow-800">Alley 4 Shortcut</h4>
-                      <p className="text-sm text-yellow-600">Fastest Route • Poor Lighting • 2 Recent Reports</p>
+                      <h4 className="font-semibold text-white/90">Alley 4 Shortcut</h4>
+                      <p className="text-xs text-red-400/80 mt-1 font-mono-stat">Fastest • Poor Lighting • 2 Alerts</p>
                     </div>
-                    <Button variant="secondary" className="bg-yellow-200 text-yellow-800 hover:bg-yellow-300">Start Navigation</Button>
+                    <Button variant="secondary" className="bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-full text-xs">Navigate</Button>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </TabsContent>
           
-          <TabsContent value="finance" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Micro-Incubator Engine</CardTitle>
-                <CardDescription>Step-by-step guidance for government grants and small business setup.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  <div className="p-4 border rounded-lg bg-pink-50">
-                    <h4 className="font-semibold text-pink-800">Mudra Yojana Loan for Women</h4>
-                    <p className="text-sm text-gray-600 mt-1">Collateral-free loans up to ₹10 Lakhs for setting up micro-enterprises.</p>
-                    <div className="mt-4 flex space-x-2">
-                      <Button size="sm">Check Eligibility</Button>
-                      <Button size="sm" variant="outline">Learn More</Button>
-                    </div>
-                  </div>
-                  <div className="p-4 border rounded-lg bg-pink-50">
-                    <h4 className="font-semibold text-pink-800">Stand-Up India Scheme</h4>
-                    <p className="text-sm text-gray-600 mt-1">Bank loans between ₹10 Lakhs and ₹1 Crore for setting up a greenfield enterprise.</p>
-                    <div className="mt-4 flex space-x-2">
-                      <Button size="sm">Check Eligibility</Button>
-                      <Button size="sm" variant="outline">Learn More</Button>
-                    </div>
+          <TabsContent value="finance" className="mt-0">
+            <div className="glass spotlight-border rounded-3xl p-8 tilt-card transition-transform duration-500 hover:scale-[1.01]">
+              <div className="mb-8 border-b border-white/10 pb-6">
+                <h2 className="text-xl font-semibold text-white/90">Micro-Incubator Engine</h2>
+                <p className="text-sm text-white/50 mt-2">Step-by-step guidance for government grants and small business setup.</p>
+              </div>
+              <div className="space-y-4">
+                <div className="p-6 border border-white/10 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors">
+                  <h4 className="font-semibold text-white/90 text-lg">Mudra Yojana Loan for Women</h4>
+                  <p className="text-sm text-white/50 mt-2 leading-relaxed">Collateral-free loans up to ₹10 Lakhs for setting up micro-enterprises.</p>
+                  <div className="mt-6 flex space-x-3">
+                    <Button className="rounded-full bg-white/10 text-white hover:bg-white/20 text-xs tracking-wide">Check Eligibility</Button>
+                    <Button variant="outline" className="rounded-full border-white/20 bg-transparent text-white/70 hover:bg-white/5 text-xs tracking-wide">Learn More</Button>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="p-6 border border-white/10 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors">
+                  <h4 className="font-semibold text-white/90 text-lg">Stand-Up India Scheme</h4>
+                  <p className="text-sm text-white/50 mt-2 leading-relaxed">Bank loans between ₹10 Lakhs and ₹1 Crore for setting up a greenfield enterprise.</p>
+                  <div className="mt-6 flex space-x-3">
+                    <Button className="rounded-full bg-white/10 text-white hover:bg-white/20 text-xs tracking-wide">Check Eligibility</Button>
+                    <Button variant="outline" className="rounded-full border-white/20 bg-transparent text-white/70 hover:bg-white/5 text-xs tracking-wide">Learn More</Button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
       </main>

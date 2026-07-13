@@ -1,245 +1,284 @@
 import { useState, useEffect } from 'react';
 import { useTranslation, TranslationProvider } from '@/contexts/TranslationContext';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
-  Heart, Scale, Briefcase, AlertCircle, ArrowRight,
-  Sparkles, Rocket, Shield, BookOpen, Sprout, MapPin,
-  Zap, Brain, Globe, Users, Search, Navigation,
-  Sun, PlusCircle
+  Heart, Sprout, Rocket, Shield, Zap, BookOpen, ArrowRight,
+  CircleDot, Sparkles
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
-const DOCK_MODULES = [
-  { icon: Heart, route: '/swasthya-mitra', label: 'Health', color: '#f472b6' },
-  { icon: Scale, route: '/kanoon-sathi', label: 'Legal', color: '#818cf8' },
-  { icon: Briefcase, route: '/yuva-rojgar', label: 'Jobs', color: '#34d399' },
-  { icon: Shield, route: '/nari-shakti', label: 'Safety', color: '#f9a8d4' },
-  { icon: Zap, route: '/resq-net', label: 'Rescue', color: '#fb923c' },
-  { icon: BookOpen, route: '/vidya-setu', label: 'Learn', color: '#60a5fa' },
-  { icon: PlusCircle, route: '/arogya-doot', label: 'Health+', color: '#f87171' },
-  { icon: Navigation, route: '/pariwahan', label: 'Transit', color: '#2dd4bf' },
-];
+import Header from '@/components/Header';
+import { motion } from 'framer-motion';
 
 const STATS = [
   { value: '2.5M+', label: 'Citizens Empowered' },
-  { value: '13', label: 'AI Modules' },
+  { value: '50+', label: 'Govt Schemes' },
+  { value: '5', label: 'Core Pillars' },
   { value: '22', label: 'Languages' },
-  { value: '99.99%', label: 'Uptime' },
 ];
+
+const FEATURED_MODULES = [
+  { 
+    title: 'Ayushman Bharat', 
+    desc: 'World\'s largest health insurance — ₹5L cover for 12Cr families', 
+    icon: Heart, 
+    theme: 'emerald' // For Emerald styling
+  },
+  { 
+    title: 'PM Kisan', 
+    desc: '₹6,000 annual income support for all landholding farmers', 
+    icon: Sprout, 
+    theme: 'orange' // For Saffron styling
+  },
+  { 
+    title: 'Skill India', 
+    desc: 'National skill development mission for 40 crore Indians', 
+    icon: Rocket, 
+    theme: 'blue' // For Ashoka Chakra styling
+  },
+  { 
+    title: 'Beti Bachao Beti Padhao', 
+    desc: 'Promoting girl child education and gender equality', 
+    icon: Shield, 
+    theme: 'rose' // For Pink styling
+  },
+  { 
+    title: 'Mudra Yojana', 
+    desc: 'Collateral-free loans up to ₹10L for micro enterprises', 
+    icon: Zap, 
+    theme: 'amber' // For Yellow styling
+  },
+  { 
+    title: 'Startup India', 
+    desc: 'Building India\'s startup ecosystem with 1.1L+ recognized startups', 
+    icon: BookOpen, 
+    theme: 'indigo' // For Indigo styling
+  },
+];
+
+const getThemeClasses = (theme: string) => {
+  switch(theme) {
+    case 'emerald': return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+    case 'orange': return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
+    case 'blue': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+    case 'rose': return 'bg-rose-500/20 text-rose-400 border-rose-500/30';
+    case 'amber': return 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+    case 'indigo': return 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30';
+    default: return 'bg-white/10 text-white border-white/20';
+  }
+}
 
 const IndexContent = () => {
   const navigate = useNavigate();
   const [loaded, setLoaded] = useState(false);
+  const [isListening, setIsListening] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setLoaded(true), 100);
     return () => clearTimeout(timer);
   }, []);
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        navigate('/modules');
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [navigate]);
+  const handleVoiceToggle = () => {
+    setIsListening(!isListening);
+  };
 
   return (
-    <div className="min-h-screen aurora-bg aurora-animated noise-overlay relative overflow-hidden">
-      {/* Ambient Orbs */}
-      <div className="orb orb-grape w-[500px] h-[500px] -top-32 -left-32" />
-      <div className="orb orb-cyan w-[400px] h-[400px] top-1/2 -right-24" style={{ animationDelay: '5s' }} />
-      <div className="orb orb-pink w-[300px] h-[300px] bottom-20 left-1/3" style={{ animationDelay: '10s' }} />
+    <div className="min-h-screen bg-[#0B0F19] font-sans overflow-hidden relative">
+      {/* Import Devanagari Fonts */}
+      <style>
+        {`
+          @import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Noto+Sans+Devanagari:wght@400;600;800&display=swap');
+          .font-hindi { font-family: 'Noto Sans Devanagari', sans-serif; }
+          .font-hindi-kalam { font-family: 'Kalam', cursive; }
+        `}
+      </style>
 
-      {/* ── Floating Navigation Island ── */}
-      <nav className="nav-island flex items-center gap-4">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-cyan-400 flex items-center justify-center">
-            <Sparkles className="w-4 h-4 text-white" />
+      {/* Deep Radial Ambient Glows (FinTech Lighting) */}
+      <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#FF9933] rounded-full mix-blend-screen filter blur-[120px] opacity-10 pointer-events-none" />
+      <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[#138808] rounded-full mix-blend-screen filter blur-[120px] opacity-10 pointer-events-none" />
+
+      {/* FinTech Mandala/Geometric Background Pattern */}
+      <div 
+        className="absolute inset-0 z-0 opacity-5 pointer-events-none" 
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l30 30-30 30L0 30z' fill='none' stroke='%23ffffff' stroke-width='1' stroke-opacity='1'/%3E%3C/svg%3E")`,
+          backgroundSize: '60px 60px'
+        }}
+      />
+
+      <Header isListening={isListening} onVoiceToggle={handleVoiceToggle} />
+
+      <main className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 pb-32 pt-40 max-w-6xl mx-auto">
+        
+        {/* Heritage Badge */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-8"
+        >
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 text-slate-300 px-5 py-2 rounded-full text-xs font-bold tracking-[0.2em] uppercase shadow-sm flex items-center">
+            <CircleDot className="w-4 h-4 mr-2 text-orange-500" />
+            <span className="mr-2 border-r border-white/10 pr-2">भारत सरकार</span>
+            Government of India
           </div>
-          <span className="font-semibold text-white/90 text-sm tracking-wide hidden sm:block">BharatSetu</span>
-        </div>
-        <div className="h-5 w-px bg-white/10" />
-        <button
-          onClick={() => navigate('/modules')}
-          className="text-xs text-white/50 hover:text-white/90 transition-colors flex items-center gap-1.5"
-        >
-          <Search className="w-3 h-3" />
-          <span className="hidden sm:inline">Modules</span>
-          <kbd className="hidden md:inline text-[10px] bg-white/10 px-1.5 py-0.5 rounded font-mono-stat">⌘K</kbd>
-        </button>
-        <div className="h-5 w-px bg-white/10 hidden sm:block" />
-        <button
-          onClick={() => navigate('/login')}
-          className="text-xs text-white/50 hover:text-white/90 transition-colors hidden sm:block"
-        >
-          Sign in
-        </button>
-      </nav>
+        </motion.div>
 
-      {/* ── Hero Section ── */}
-      <main className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 pb-32 pt-24">
-        {/* Glowing tag */}
-        <div
-          className={`mb-8 transition-all duration-700 ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+        {/* Monumental Hero Text (High Contrast) */}
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.1 }}
+          className="text-center leading-tight tracking-tight mb-4 text-white"
+          style={{ fontSize: 'clamp(3.5rem, 8vw, 6rem)', fontWeight: 800 }}
         >
-          <Badge className="glow-badge bg-white/5 border border-white/10 text-white/80 px-4 py-1.5 rounded-full text-xs tracking-widest uppercase backdrop-blur-md">
-            <Sparkles className="w-3 h-3 mr-2 text-purple-400" />
-            India's Digital Empowerment Ecosystem
-          </Badge>
-        </div>
+          Bharat<span className="font-light text-orange-500">Setu</span>
+        </motion.h1>
 
-        {/* Massive Hero Text */}
-        <h1
-          className={`text-gradient-hero text-center leading-none tracking-tight mb-6 transition-all duration-1000 delay-200 ${
-            loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
-          }`}
-          style={{ fontSize: 'clamp(2.5rem, 8vw, 7rem)', fontWeight: 300 }}
+        {/* Hindi Subtitle */}
+        <motion.h2
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.2 }}
+          className="text-center text-slate-400 font-hindi-kalam text-2xl md:text-3xl mb-4"
         >
-          Bharat<span style={{ fontWeight: 600 }}>Setu</span>
-        </h1>
+          एक ऐप. पच्चास से अधिक योजनाएं.
+        </motion.h2>
 
-        <p
-          className={`text-white/50 text-center max-w-xl mb-4 transition-all duration-700 delay-500 ${
-            loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-          }`}
-          style={{ fontSize: 'clamp(1rem, 2vw, 1.25rem)', lineHeight: 1.7 }}
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.3 }}
+          className="text-slate-400 text-center max-w-2xl mb-12 text-xl font-medium"
         >
-          One app. Thirteen modules. Infinite impact.
-        </p>
-
-        <p
-          className={`text-white/30 text-center max-w-md mb-12 text-sm transition-all duration-700 delay-700 ${
-            loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-          }`}
-        >
-          Health · Legal · Employment · Education · Safety · Disaster Relief · Finance · Transit — powered by edge AI, offline-first, and built for 1.4 billion.
-        </p>
+          One app. Fifty+ schemes. Infinite impact.
+        </motion.p>
 
         {/* CTA Buttons */}
-        <div
-          className={`flex flex-col sm:flex-row gap-4 mb-16 transition-all duration-700 delay-1000 ${
-            loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-          }`}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.5 }}
+          className="flex flex-col sm:flex-row gap-4 mb-20 w-full sm:w-auto"
         >
-          <Button
-            onClick={() => navigate('/modules')}
-            className="bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 text-white px-8 py-3 rounded-full text-base shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40 transition-all duration-300 hover:-translate-y-1"
-          >
-            <Rocket className="w-4 h-4 mr-2" />
-            Launch Modules
-          </Button>
-          <Button
-            onClick={() => navigate('/register')}
-            variant="ghost"
-            className="text-white/60 hover:text-white hover:bg-white/5 px-8 py-3 rounded-full text-base border border-white/10"
-          >
-            Get Started
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
-        </div>
+          <motion.div whileTap={{ scale: 0.97 }} className="w-full sm:w-auto">
+            <Button
+              onClick={() => navigate('/modules')}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white border border-white/10 px-8 py-6 text-lg shadow-xl hover:shadow-2xl hover:shadow-blue-900/50 transition-all rounded-full font-semibold"
+            >
+              <Rocket className="w-5 h-5 mr-3" />
+              Launch Modules
+            </Button>
+          </motion.div>
+          
+          <motion.div whileTap={{ scale: 0.97 }} className="w-full sm:w-auto">
+            <Button
+              onClick={() => navigate('/register')}
+              variant="outline"
+              className="w-full bg-white/5 border border-white/10 text-white hover:bg-white/10 px-8 py-6 text-lg shadow-sm transition-all rounded-full font-semibold backdrop-blur-md"
+            >
+              Get Started
+              <ArrowRight className="w-5 h-5 ml-3" />
+            </Button>
+          </motion.div>
+        </motion.div>
 
-        {/* Floating Stat Bubbles */}
-        <div
-          className={`grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl w-full transition-all duration-700 delay-[1200ms] ${
-            loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-          }`}
+        {/* FinTech Glassmorphism Stats Cards */}
+        <motion.div
+          initial="hidden"
+          animate="show"
+          variants={{
+            hidden: { opacity: 0 },
+            show: {
+              opacity: 1,
+              transition: { staggerChildren: 0.1, delayChildren: 0.6 },
+            },
+          }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full"
         >
           {STATS.map((stat, i) => (
-            <div
+            <motion.div
               key={i}
-              className="glass rounded-2xl p-5 text-center hover-lift cursor-default"
+              variants={{
+                hidden: { opacity: 0, y: 15 },
+                show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+              }}
+              whileHover={{ y: -2, scale: 1.02 }}
+              className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 text-center border border-white/10 shadow-lg relative overflow-hidden group"
             >
-              <div className="font-mono-stat text-2xl md:text-3xl font-bold text-gradient-grape mb-1">
+              {/* Subtle hover gradient */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              
+              <div className="relative z-10 font-mono text-3xl md:text-4xl font-black text-white mb-2 tracking-tight">
                 {stat.value}
               </div>
-              <div className="text-white/40 text-xs tracking-wider uppercase">
+              <div className="relative z-10 text-slate-400 text-[10px] font-bold tracking-widest uppercase">
                 {stat.label}
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
-        {/* Module Quick Grid */}
-        <div
-          className={`mt-16 max-w-5xl w-full transition-all duration-700 delay-[1400ms] ${
-            loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-          }`}
+        {/* Featured Modules with Glassmorphism */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 1 }}
+          className="mt-24 w-full"
         >
-          <h2 className="text-white/30 text-xs tracking-[0.3em] uppercase text-center mb-8">
-            Featured Modules
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              { title: 'SwasthyaMitra', desc: 'AI-powered healthcare & symptom analysis', icon: Heart, color: '#f472b6', route: '/swasthya-mitra' },
-              { title: 'NariShakti', desc: 'SOS audio analytics & women safety', icon: Shield, color: '#f9a8d4', route: '/nari-shakti' },
-              { title: 'ResQNet', desc: 'Offline mesh networking & disaster response', icon: Zap, color: '#fb923c', route: '/resq-net' },
-              { title: 'VidyaSetu', desc: 'Vernacular education & AR classrooms', icon: BookOpen, color: '#60a5fa', route: '/vidya-setu' },
-              { title: 'ArogyaDoot', desc: 'Telemedicine & drone medicine delivery', icon: PlusCircle, color: '#f87171', route: '/arogya-doot' },
-              { title: 'Pariwahan', desc: 'E-Rickshaw pooling & rural transit', icon: Navigation, color: '#2dd4bf', route: '/pariwahan' },
-            ].map((mod, i) => (
-              <div
-                key={i}
-                onClick={() => navigate(mod.route)}
-                className="glass rounded-2xl p-6 hover-lift cursor-pointer group relative overflow-hidden"
-                style={{ animationDelay: `${i * 80}ms` }}
-              >
-                {/* Ambient tint */}
-                <div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                  style={{ background: `radial-gradient(circle at 50% 50%, ${mod.color}15, transparent 70%)` }}
-                />
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-slate-400 text-xs font-bold tracking-[0.3em] uppercase">
+              Featured Initiatives
+            </h2>
+            <div className="h-px flex-1 bg-white/10 ml-6" />
+          </div>
 
-                <div className="relative z-10 flex items-start gap-4">
-                  <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                    style={{ background: `${mod.color}20` }}
-                  >
-                    <mod.icon className="w-5 h-5" style={{ color: mod.color }} />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {FEATURED_MODULES.map((mod, i) => (
+              <motion.div
+                key={i}
+                whileHover={{ y: -4, scale: 1.01 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => navigate(mod.route)}
+                className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 shadow-lg hover:shadow-xl transition-all cursor-pointer group relative overflow-hidden"
+              >
+                {/* Micro-interaction: Tricolor Border Highlight on Hover */}
+                <div className="absolute inset-0 bg-gradient-to-r from-orange-500 via-white to-green-600 opacity-0 group-hover:opacity-20 transition-opacity rounded-2xl p-[1px] -z-10" />
+                <div className="absolute inset-[1px] bg-[#0B0F19]/90 backdrop-blur-xl rounded-2xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                <div className="flex items-start gap-4 mt-2">
+                  {/* Glowing Circular Container */}
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 border ${getThemeClasses(mod.theme)} shadow-[0_0_15px_rgba(255,255,255,0.05)] group-hover:shadow-[0_0_25px_rgba(255,255,255,0.1)] transition-all duration-300`}>
+                    <mod.icon className="w-5 h-5" />
                   </div>
                   <div className="min-w-0">
-                    <h3 className="text-white/90 font-semibold text-sm mb-1 group-hover:text-white transition-colors">
+                    <h3 className="text-white font-bold text-lg mb-1 group-hover:text-blue-400 transition-colors truncate">
                       {mod.title}
                     </h3>
-                    <p className="text-white/35 text-xs leading-relaxed group-hover:text-white/50 transition-colors">
+                    <p className="text-slate-400 text-sm leading-relaxed line-clamp-2">
                       {mod.desc}
                     </p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
-
-          <div className="text-center mt-8">
-            <Button
-              variant="ghost"
-              onClick={() => navigate('/modules')}
-              className="text-white/40 hover:text-white/80 hover:bg-white/5 rounded-full px-6 text-sm border border-white/5"
-            >
-              View all 13 modules
-              <ArrowRight className="w-3 h-3 ml-2" />
-            </Button>
-          </div>
-        </div>
+        </motion.div>
       </main>
 
-      {/* ── Floating Bottom Dock ── */}
-      <div className="bottom-dock">
-        {DOCK_MODULES.map((mod, i) => (
-          <button
-            key={i}
-            onClick={() => navigate(mod.route)}
-            className="dock-item"
-            title={mod.label}
-          >
-            <mod.icon className="w-4 h-4" />
-          </button>
-        ))}
-      </div>
+      {/* Floating Action Button (AI Assistant) */}
+      <motion.button
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 1.5, type: 'spring' }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className="fixed bottom-6 right-6 w-14 h-14 bg-orange-500 rounded-full flex items-center justify-center shadow-lg shadow-orange-500/30 z-50 group border border-orange-400/50"
+      >
+        <Sparkles className="w-6 h-6 text-white group-hover:rotate-12 transition-transform duration-300" />
+        {/* Pulse effect */}
+        <div className="absolute inset-0 rounded-full border border-orange-500 animate-ping opacity-20" />
+      </motion.button>
+
     </div>
   );
 };

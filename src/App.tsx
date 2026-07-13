@@ -30,18 +30,26 @@ import ArogyaDoot from "./pages/ArogyaDoot";
 import UrjaVikas from "./pages/UrjaVikas";
 import Pariwahan from "./pages/Pariwahan";
 import NotFound from "./pages/NotFound";
+import SchemeDetailPage from "./pages/SchemeDetailPage";
+import ExploreSchemes from "./pages/ExploreSchemes";
+
+import { GlobalErrorBoundary } from "@/components/GlobalErrorBoundary";
+import { SchemeSyncWrapper } from "@/components/SchemeSyncWrapper";
 
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TranslationProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
+  <GlobalErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <SchemeSyncWrapper>
+        <TranslationProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/explore" element={<ExploreSchemes />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/account" element={<Account />} />
@@ -64,6 +72,7 @@ const App = () => (
             <Route path="/arogya-doot" element={<ArogyaDoot />} />
             <Route path="/urja-vikas" element={<UrjaVikas />} />
             <Route path="/pariwahan" element={<Pariwahan />} />
+            <Route path="/scheme/:schemeId" element={<SchemeDetailPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
@@ -71,9 +80,11 @@ const App = () => (
           {/* Enhanced AI Chatbot - Available on all pages */}
           <EnhancedChatBot />
         </BrowserRouter>
-      </TooltipProvider>
-    </TranslationProvider>
-  </QueryClientProvider>
+          </TooltipProvider>
+        </TranslationProvider>
+      </SchemeSyncWrapper>
+    </QueryClientProvider>
+  </GlobalErrorBoundary>
 );
 
 export default App;
