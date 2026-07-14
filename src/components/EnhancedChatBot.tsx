@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { Bot, Send, Mic, MicOff, Minimize2, Sparkles, User, Volume2, VolumeX } from 'lucide-react';
+import { Bot, Send, Mic, MicOff, Minimize2, Sparkles, User, Volume2, VolumeX, Brain } from 'lucide-react';
 import { useSchemeStore } from '../store/schemeStore';
 
 interface Message {
@@ -162,13 +162,15 @@ const EnhancedChatBot = () => {
 
   if (isMinimized) {
     return (
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-6 right-6 z-50 group">
+        <div className="absolute inset-0 bg-blue-500 rounded-full animate-ping opacity-30 group-hover:opacity-50 transition-opacity"></div>
         <Button
           aria-label="Open AI Assistant"
           onClick={() => setIsMinimized(false)}
-          className="rounded-full w-14 h-14 bg-gradient-to-br from-bs-navy to-bs-green hover:shadow-[0_0_20px_rgba(30,58,138,0.5)] border border-white/10 shadow-xl transition-all hover:scale-110 group"
+          className="relative rounded-full w-14 h-14 bg-blue-600 hover:bg-blue-500 border border-blue-400/50 shadow-[0_0_25px_rgba(59,130,246,0.6)] transition-all hover:scale-110 flex items-center justify-center p-0"
         >
-          <Sparkles className="w-6 h-6 text-bs-saffron group-hover:animate-pulse" />
+          <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-blue-700 to-cyan-400 opacity-50 pointer-events-none"></div>
+          <Brain className="relative z-10 w-6 h-6 text-white animate-pulse" />
         </Button>
       </div>
     );

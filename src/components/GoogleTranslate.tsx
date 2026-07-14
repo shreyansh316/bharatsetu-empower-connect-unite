@@ -29,7 +29,7 @@ const GoogleTranslate: React.FC = () => {
       new window.google.translate.TranslateElement({
         pageLanguage: 'en',
         includedLanguages: 'hi,en,bn,te,mr,ta,gu,kn,ml,pa,or,as,ne,sd,ur,ks,ko,ja,zh,es,fr,de,ru,ar,pt,it',
-        layout: window.google.translate.TranslateElement.InlineLayout.HORIZONTAL,
+        layout: 1, // window.google.translate.TranslateElement.InlineLayout.HORIZONTAL
         autoDisplay: false,
         multilanguagePage: true
       }, 'google_translate_element');

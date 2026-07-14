@@ -6,8 +6,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { TranslationProvider } from "@/contexts/TranslationContext";
 import EnhancedChatBot from "@/components/EnhancedChatBot";
+import { AuthGuard } from "@/components/AuthGuard";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
 import Register from "./pages/Register";
 import Account from "./pages/Account";
 import YuvaRojgar from "./pages/YuvaRojgar";
@@ -51,11 +53,12 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/explore" element={<ExploreSchemes />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />
             <Route path="/register" element={<Register />} />
-            <Route path="/account" element={<Account />} />
-            <Route path="/modules" element={<ModuleLauncher />} />
-            <Route path="/yuva-rojgar" element={<YuvaRojgar />} />
-            <Route path="/swasthya-mitra" element={<SwasthyaMitra />} />
+            <Route path="/account" element={<AuthGuard><Account /></AuthGuard>} />
+            <Route path="/modules" element={<AuthGuard><ModuleLauncher /></AuthGuard>} />
+            <Route path="/yuva-rojgar" element={<AuthGuard><YuvaRojgar /></AuthGuard>} />
+            <Route path="/swasthya-mitra" element={<AuthGuard><SwasthyaMitra /></AuthGuard>} />
             <Route path="/kanoon-sathi" element={<KanoonSathi />} />
             <Route path="/samasya-report" element={<SamasyaReport />} />
             <Route path="/pathshaala-plus" element={<PathShaalaPlus />} />
